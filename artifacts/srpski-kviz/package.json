@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
- "scripts": {
-  "build": "vite build",
-  "start": "node server.js",
-  "dev": "vite"
+  "scripts": {
+    "build": "vite build",
+    "start": "vite preview --host 0.0.0.0 --port $PORT",
+    "dev": "vite --host 0.0.0.0"
+  }
 }
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
