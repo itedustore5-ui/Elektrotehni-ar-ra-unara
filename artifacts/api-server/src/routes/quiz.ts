@@ -15,6 +15,18 @@ const router: IRouter = Router();
 
 const percent = (score: number, total: number) => Math.round((score / Math.max(total, 1)) * 100);
 
+// Definicije predmeta — opsezi ID-ova pitanja
+const SUBJECTS = [
+  { key: "rh",  label: "Рачунарски хардвер",             min: 1,   max: 50  },
+  { key: "os",  label: "Оперативни системи",              min: 51,  max: 151 },
+  { key: "ors", label: "Одржавање рачунарских система",   min: 152, max: 200 },
+  { key: "td",  label: "Техничка документација",          min: 201, max: 250 },
+];
+
+function subjectForQuestion(id: number) {
+  return SUBJECTS.find((s) => id >= s.min && id <= s.max);
+}
+
 async function attemptsForUser(userId: number) {
   return db.select().from(quizAttempts).where(eq(quizAttempts.userId, userId)).orderBy(desc(quizAttempts.createdAt));
 }
@@ -52,6 +64,23 @@ function scoreAnswer(question: QuizQuestion, answer: string): boolean {
   return false;
 }
 
+// Računa rezultate po predmetu za dati skup odgovora
+function subjectStats(answers: { questionId: number; answer: string }[]) {
+  const answerMap = new Map(answers.map((a) => [a.questionId, a.answer]));
+  return SUBJECTS.map((subject) => {
+    const subjectQuestions = questions.filter((q) => q.id >= subject.min && q.id <= subject.max);
+    const answered = subjectQuestions.filter((q) => answerMap.has(q.id));
+    const correct = answered.filter((q) => scoreAnswer(q, answerMap.get(q.id)!)).length;
+    return {
+      key: subject.key,
+      label: subject.label,
+      score: correct,
+      total: subjectQuestions.length,
+      percentage: answered.length > 0 ? percent(correct, subjectQuestions.length) : null,
+    };
+  });
+}
+
 router.get("/dashboard", requireAuth, async (req, res) => {
   const user = (req as AuthedRequest).user;
   const attempts = await attemptsForUser(user.id);
@@ -59,15 +88,30 @@ router.get("/dashboard", requireAuth, async (req, res) => {
   const lastScore = attempts[0]?.percentage ?? null;
   const locked = user.quizOnce && attempts.length > 0;
 
-  res.json(
-    GetDashboardResponse.parse({
-      attemptsCount: attempts.length,
-      bestScore,
-      lastScore,
-      canTakeQuiz: !locked,
-      lockReason: locked ? "Искористили сте свој једини покушај за квиз." : null,
-    }),
-  );
+  // Rezultati po predmetu iz najboljeg pokusaja
+  let subjectScores: { key: string; label: string; score: number; total: number; percentage: number | null }[] = [];
+  if (attempts.length > 0) {
+    const bestAttempt = attempts.reduce((best, a) => a.percentage > best.percentage ? a : best, attempts[0]);
+    const savedAnswers = bestAttempt.answers as { questionId: number; answer: string }[];
+    subjectScores = subjectStats(savedAnswers);
+  } else {
+    subjectScores = SUBJECTS.map((s) => ({
+      key: s.key,
+      label: s.label,
+      score: 0,
+      total: questions.filter((q) => q.id >= s.min && q.id <= s.max).length,
+      percentage: null,
+    }));
+  }
+
+  res.json({
+    attemptsCount: attempts.length,
+    bestScore,
+    lastScore,
+    canTakeQuiz: !locked,
+    lockReason: locked ? "Искористили сте свој једини покушај за квиз." : null,
+    subjectScores,
+  });
 });
 
 router.get("/questions", requireAuth, (_req, res) => {
@@ -88,6 +132,8 @@ router.post("/attempts", requireAuth, async (req, res) => {
 
   const body = SubmitAttemptBody.parse(req.body);
   const answerMap = new Map(body.answers.map((a) => [a.questionId, a.answer]));
+
+  // Score se racuna samo za odgovorena pitanja, total je uvek ukupan broj pitanja
   const score = questions.reduce((total, question) => {
     const answer = answerMap.get(question.id);
     if (answer === undefined) return total;
@@ -114,19 +160,37 @@ router.post("/attempts", requireAuth, async (req, res) => {
   );
 });
 
-router.get("/scoreboard", requireAuth, async (_req, res) => {
+router.get("/scoreboard", requireAuth, async (req, res) => {
+  const user = (req as AuthedRequest).user;
+
+  // Student vidi samo sebe, admin vidi sve
+  if (user.role === "student") {
+    const attempts = await attemptsForUser(user.id);
+    const rows = [{
+      rank: 1,
+      username: user.username,
+      fullName: user.fullName,
+      bestScore: attempts.reduce((best, a) => Math.max(best, a.percentage), 0),
+      attemptsCount: attempts.length,
+      lastScore: attempts[0]?.percentage ?? null,
+    }];
+    res.json(GetScoreboardResponse.parse(rows));
+    return;
+  }
+
+  // Admin vidi sve
   const allUsers = await db.select().from(users).where(and(eq(users.active, true), eq(users.role, "student")));
   const allAttempts = await db.select().from(quizAttempts).orderBy(desc(quizAttempts.createdAt));
 
   const rows = allUsers
-    .map((user) => {
-      const attempts = allAttempts.filter((attempt) => attempt.userId === user.id);
+    .map((u) => {
+      const userAttempts = allAttempts.filter((a) => a.userId === u.id);
       return {
-        username: user.username,
-        fullName: user.fullName,
-        bestScore: attempts.reduce((best, attempt) => Math.max(best, attempt.percentage), 0),
-        attemptsCount: attempts.length,
-        lastScore: attempts[0]?.percentage ?? null,
+        username: u.username,
+        fullName: u.fullName,
+        bestScore: userAttempts.reduce((best, a) => Math.max(best, a.percentage), 0),
+        attemptsCount: userAttempts.length,
+        lastScore: userAttempts[0]?.percentage ?? null,
       };
     })
     .sort((a, b) => b.bestScore - a.bestScore || a.fullName.localeCompare(b.fullName))
