@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
   "build": "vite build",
-  "start": "vite preview --host 0.0.0.0 --port $PORT",
+  "start": "vite preview --host 0.0.0.0 --port $PORT"
   "dev": "vite --config vite.config.ts --host 0.0.0.0",
   "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
   "typecheck": "tsc -p tsconfig.json --noEmit"
