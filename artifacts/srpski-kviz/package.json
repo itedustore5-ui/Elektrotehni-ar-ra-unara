@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "start": "node server.js"
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server.js"
+  }
 }
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
