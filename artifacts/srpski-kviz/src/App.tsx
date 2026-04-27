@@ -36,12 +36,21 @@ type Question = {
   hasSkips?: boolean;
 };
 
+type SubjectScore = {
+  key: string;
+  label: string;
+  score: number;
+  total: number;
+  percentage: number | null;
+};
+
 type DashboardStats = {
   attemptsCount: number;
   bestScore: number;
   lastScore: number | null;
   canTakeQuiz: boolean;
   lockReason: string | null;
+  subjectScores: SubjectScore[];
 };
 type ScoreboardEntry = {
   rank: number;
@@ -270,7 +279,7 @@ function Login({ onLogin }: { onLogin: (user: AuthUser) => void }) {
       <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/15 bg-white/10 shadow-2xl backdrop-blur md:grid-cols-[1.1fr_0.9fr]">
         <div className="p-8 md:p-12">
           <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-blue-200">Припрема</p>
-          <h1 className="text-4xl font-black leading-tight md:text-6xl">За матурски испит. Питања 101-151</h1>
+          <h1 className="text-4xl font-black leading-tight md:text-6xl">Припрема за матурски испит.</h1>
           <p className="mt-6 max-w-xl text-lg text-blue-100">Једно питање по једно, објашњење после сваког одговора, јасан напредак.</p>
         </div>
         <form onSubmit={submit} className="bg-slate-950/45 p-8 md:p-12">
@@ -284,6 +293,23 @@ function Login({ onLogin }: { onLogin: (user: AuthUser) => void }) {
             {loading ? "Пријављивање..." : "Уђи у квиз"}
           </button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function SubjectCard({ subject }: { subject: SubjectScore }) {
+  const pct = subject.percentage;
+  const color = pct === null ? "bg-white/20" : pct >= 60 ? "bg-emerald-400" : "bg-red-400";
+  return (
+    <div className="card p-4">
+      <p className="text-xs md:text-sm text-blue-200 font-bold">{subject.label}</p>
+      <div className="mt-2 flex items-end justify-between gap-2">
+        <p className="text-2xl md:text-3xl font-black">{pct === null ? "—" : `${pct}%`}</p>
+        <p className="text-xs text-blue-300 mb-1">{subject.score}/{subject.total} тачних</p>
+      </div>
+      <div className="mt-2 h-1.5 rounded-full bg-white/10">
+        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: pct === null ? "0%" : `${pct}%` }} />
       </div>
     </div>
   );
@@ -305,11 +331,27 @@ function Dashboard({ user }: { user: AuthUser }) {
         <h2 className="mt-2 text-3xl md:text-4xl font-black">Ваш dashboard</h2>
         {error && <p className="mt-4 text-red-200">{error}</p>}
       </div>
+
+      {/* Ukupni stats */}
       <div className="grid gap-3 grid-cols-3 md:gap-4">
         <Stat title="Покушаји" value={stats?.attemptsCount ?? "—"} />
         <Stat title="Најбољи" value={`${stats?.bestScore ?? 0}%`} />
         <Stat title="Последњи" value={stats?.lastScore == null ? "—" : `${stats.lastScore}%`} />
       </div>
+
+      {/* Rezultati po predmetu */}
+      <div className="mt-4">
+        <h3 className="text-sm font-bold text-blue-200 uppercase tracking-widest mb-3">Резултати по предмету (наjбољи покушај)</h3>
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          {(stats?.subjectScores ?? [
+            { key: "rh",  label: "Рачунарски хардвер",           score: 0, total: 50,  percentage: null },
+            { key: "os",  label: "Оперативни системи",            score: 0, total: 101, percentage: null },
+            { key: "ors", label: "Одржавање рачунарских система", score: 0, total: 49,  percentage: null },
+            { key: "td",  label: "Техничка документација",        score: 0, total: 50,  percentage: null },
+          ]).map((s) => <SubjectCard key={s.key} subject={s} />)}
+        </div>
+      </div>
+
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="card">
           <h3 className="text-xl md:text-2xl font-black">Квиз</h3>
@@ -805,8 +847,8 @@ function QuizPage() {
               Напред →
             </button>
           ) : (
-            <button className="primary py-2 px-4 text-sm" disabled={answeredCount !== questions.length} onClick={submit}>
-              Заврши
+            <button className="primary py-2 px-4 text-sm" onClick={submit}>
+              Заврши ({answeredCount}/{questions.length})
             </button>
           )}
         </div>
@@ -817,12 +859,12 @@ function QuizPage() {
   );
 }
 
-function Scoreboard() {
+function Scoreboard({ user }: { user: AuthUser }) {
   const [rows, setRows] = useState<ScoreboardEntry[]>([]);
   useEffect(() => { api<ScoreboardEntry[]>("/scoreboard").then(setRows).catch(() => setRows([])); }, []);
   return (
     <div className="card">
-      <h2 className="text-2xl md:text-3xl font-black">Scoreboard</h2>
+      <h2 className="text-2xl md:text-3xl font-black">{user.role === "admin" ? "Scoreboard — сви студенти" : "Мojи резултати"}</h2>
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[500px] text-left text-sm md:text-base">
           <thead className="text-blue-200">
@@ -961,7 +1003,7 @@ function AppRouter() {
       <Route path="/">{() => <Protected auth={auth}><Dashboard user={auth.user!} /></Protected>}</Route>
       <Route path="/dashboard">{() => <Protected auth={auth}><Dashboard user={auth.user!} /></Protected>}</Route>
       <Route path="/quiz">{() => <Protected auth={auth}><QuizPage /></Protected>}</Route>
-      <Route path="/scoreboard">{() => <Protected auth={auth}><Scoreboard /></Protected>}</Route>
+      <Route path="/scoreboard">{() => <Protected auth={auth}><Scoreboard user={auth.user!} /></Protected>}</Route>
       <Route path="/admin">{() => <Protected auth={auth}>{auth.user?.role === "admin" ? <AdminPanel /> : <Dashboard user={auth.user!} />}</Protected>}</Route>
       <Route component={NotFound} />
     </Switch>
