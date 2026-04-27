@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
-  "start": "vite preview --host 0.0.0.0 --port $PORT"
-    "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
-  },
+  "build": "vite build",
+  "start": "vite preview --host 0.0.0.0 --port $PORT",
+  "dev": "vite --config vite.config.ts --host 0.0.0.0",
+  "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
+  "typecheck": "tsc -p tsconfig.json --noEmit"
+}
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.4",
