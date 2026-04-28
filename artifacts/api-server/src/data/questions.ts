@@ -30,7 +30,7 @@ export type QuizQuestion = SingleQ | MultiQ | FillQ | MatchQ | OrderQ;
 const jpg = (id: number) => `/images/${id}.jpg`;
 
 export const questions: QuizQuestion[] = [
-   {{
+   {
     id: 1, type: "single", subject: "hardware", points: 1,
     question: "Приликом уклањања процесора са матичне плоче, први корак је:",
     options: [
@@ -2983,3 +2983,4 @@ export const questions: QuizQuestion[] = [
     explanation: "Редослед: Print Screen → отвори Paint → Ctrl+V (налепи) → Селектуjи → Crop → Сними → Инсертуji у Word.",
   },
 ];
+export default questions;
