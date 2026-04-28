@@ -2983,4 +2983,4 @@ export const questions: QuizQuestion[] = [
     explanation: "Редослед: Print Screen → отвори Paint → Ctrl+V (налепи) → Селектуjи → Crop → Сними → Инсертуji у Word.",
   },
 ];
-export default questions;
+
