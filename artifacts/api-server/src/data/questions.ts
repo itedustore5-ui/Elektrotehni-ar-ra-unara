@@ -1,35 +1,35 @@
 export type SingleQ = {
-  id: number; type: "single"; question: string;
-  options: string[]; correctAnswer: number;
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "single"; subject: string; points: number;
+  question: string; options: string[]; correctAnswer: number;
+  explanation: string; imageQuestion?: boolean;
 };
 export type MultiQ = {
-  id: number; type: "multi"; question: string;
-  options: string[]; correctAnswers: number[];
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "multi"; subject: string; points: number;
+  question: string; options: string[]; correctAnswers: number[];
+  explanation: string; imageQuestion?: boolean;
 };
 export type FillQ = {
-  id: number; type: "fill"; question: string;
-  correctText: string; hint?: string;
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "fill"; subject: string; points: number;
+  question: string; correctAnswers: string | string[];
+  items?: string[]; hint?: string;
+  explanation: string; imageQuestion?: boolean;
 };
 export type MatchQ = {
-  id: number; type: "match"; question: string;
-  leftItems: string[]; rightItems: string[];
+  id: number; type: "match"; subject: string; points: number;
+  question: string; leftItems: string[]; rightItems: string[];
   correctPairs: number[];
-  explanation: string; imageQuestion?: string | null;
+  explanation: string; imageQuestion?: boolean;
 };
 export type OrderQ = {
-  id: number; type: "order"; question: string;
-  items: string[]; correctOrder: number[];
+  id: number; type: "order"; subject: string; points: number;
+  question: string; items: string[]; correctOrder: number[];
   hasSkips?: boolean;
-  explanation: string; imageQuestion?: string | null;
+  explanation: string; imageQuestion?: boolean;
 };
 export type QuizQuestion = SingleQ | MultiQ | FillQ | MatchQ | OrderQ;
 
-const jpg = (id: number) => `/images/${id}.jpg`;
-
 export const questions: QuizQuestion[] = [
+
   // ─────────────────────────────────────────────────────────────
   //  РАЧУНАРСКИ ХАРДВЕР  (1 – 51)
   // ─────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ export const questions: QuizQuestion[] = [
       "уклонити хладњак са матичне плоче",
       "уклонити процесор са матичне плоче",
     ],
-    correctAnswer: 0,
+    correctAnswers: 0,
     explanation: "Пре него што се склони хладњак или процесор, прво се мора откључати (ослободити) подножје процесора.",
   },
   {
@@ -441,12 +441,7 @@ export const questions: QuizQuestion[] = [
       "Ctrl fn alt",
       "F3 F5 F12",
     ],
-    correctPairs: {
-      "Strelica levo, Strelica gore": 4,
-      "1 7 A H f": 1,
-      "Ctrl fn alt": 3,
-      "F3 F5 F12": 2,
-    },
+    correctPairs: [3,0,2,1],
     explanation: "Стрелице су тастери за навигацију, буквено-нумерички су алфанумерички, Ctrl/fn/alt су контролни, F-тастери су функцијски.",
   },
   {
@@ -455,7 +450,7 @@ export const questions: QuizQuestion[] = [
     question: "На слици су бројевима означени елементи матичне плоче. На линију поред назива елемента уписати број одговарајућег елемента са слике.",
     leftItems: ["процесор", "VGA", "PCexpress", "SATA конектори", "конектор за напајање", "DVI"],
     rightItems: ["(бројеви са слике)"],
-    correctPairs: {},
+    correctPairs: [-1],
     explanation: "Одговор зависи од конкретне слике матичне плоче у задатку.",
   },
   {
@@ -464,7 +459,7 @@ export const questions: QuizQuestion[] = [
     question: "На слици су бројевима означене компоненте графичког адаптера. На линију поред назива компоненте уписати одговарајући број са слике.",
     leftItems: ["DVI", "конектори за матичну плочу", "VGA", "GPU са хладњаком", "HDMI", "VRAM"],
     rightItems: ["(бројеви са слике)"],
-    correctPairs: {},
+    correctPairs: [-1],
     explanation: "Одговор зависи од конкретне слике графичке картице у задатку.",
   },
   {
@@ -473,7 +468,7 @@ export const questions: QuizQuestion[] = [
     question: "Корисник жели 24 GB DDR4 RAM у двоканалном режиму. Канал А: слот 1 и 3; Канал В: слот 2 и 4. Модули у истом каналу морају бити исти. Уз минималну потрошњу новца распоредите модуле у слотове.",
     leftItems: ["слот 1", "слот 2", "слот 3", "слот 4"],
     rightItems: ["(из табеле модула на слици)"],
-    correctPairs: {},
+    correctPairs: [-1],
     explanation: "За 24 GB двоканално, нпр. 2×8 GB у каналу А (слот 1 и 3) и 2×4 GB у каналу В (слот 2 и 4).",
   },
   {
@@ -493,12 +488,7 @@ export const questions: QuizQuestion[] = [
       "5 Gbps",
       "600 MB/s",
     ],
-    correctPairs: {
-      "10 Gbps": 3,
-      "3,938 GB/s (~4 GB)": 4,
-      "500 MB/s": 1,
-      "600 MB/s": 2,
-    },
+    correctPairs: [2,3,-1,0,-1,1],
     explanation: "USB 3.2 Gen2 = 10 Gbps; PCI-E 3.0 x4 ≈ 4 GB/s; SATA 3.0 = 600 MB/s; PCI-E 2.0 x1 = 500 MB/s.",
   },
   {
@@ -516,12 +506,7 @@ export const questions: QuizQuestion[] = [
       "Недавно инсталирани меморијски модул се не види",
       "Гласни и необични звуци кликтања долазе из кућишта",
     ],
-    correctPairs: {
-      "Рачунар се прегрева и искључује": 1,
-      "Напајање је постављено али се рачунар упорно гаси": 3,
-      "Недавно инсталирани меморијски модул се не види": 4,
-      "Гласни и необични звуци кликтања долазе из кућишта": 2,
-    },
+    correctPairs: [0,2,3,1],
     explanation: "Прегревање → вентилатори; гашење → напајање; RAM не виђен → провера постављености; кликтање → страна тела или HDD.",
   },
   {
@@ -536,14 +521,7 @@ export const questions: QuizQuestion[] = [
       "6. плава",
     ],
     rightItems: ["+ 12 V", "+5V", "+ 3.3 V", "GND", "PC_ON", "-12 V"],
-    correctPairs: {
-      "+ 12 V": 4,
-      "+5V": 1,
-      "+ 3.3 V": 2,
-      "GND": 3,
-      "PC_ON": 5,
-      "-12 V": 6,
-    },
+    correctPairs: [3,0,1,2,4,5],
     explanation: "ATX стандард: жута=+12V, црвена=+5V, наранџаста=+3,3V, црна=GND, зелена=PS_ON, плава=-12V.",
   },
   {
@@ -552,11 +530,7 @@ export const questions: QuizQuestion[] = [
     question: "Улога звучне картице укључује А/Д конверзију (аналог → дигитал) у три корака. На слици је шематски приказ, а на десној страни су кораци. Уписати број блока са слике испред одговарајућег корака.",
     leftItems: ["Блок 1 (Sampling – Одмеравање)", "Блок 2 (Quantization – Квантизација)", "Блок 3 (Coding – Кодирање)"],
     rightItems: ["Кодирање", "Квантизација", "Одмеравање"],
-    correctPairs: {
-      "Кодирање": 3,
-      "Квантизација": 2,
-      "Одмеравање": 1,
-    },
+    correctPairs: [2,1,0],
     explanation: "Кораци А/Д конверзије редом: 1. Одмеравање, 2. Квантизација, 3. Кодирање.",
   },
   {
@@ -578,14 +552,7 @@ export const questions: QuizQuestion[] = [
       "Прелазак на други језик на тастатури",
       "Копира садржај активног прозора у Clipboard",
     ],
-    correctPairs: {
-      "Кретање изједне отворене апликације у другу": 2,
-      "Отвара програм File Explorer": 5,
-      "Минимизује све отворене прозоре": 1,
-      "Cut – при премештању фајлова и фолдера": 4,
-      "Прелазак на други језик на тастатури": 6,
-      "Копира садржај активног прозора у Clipboard": 3,
-    },
+    correctPairs: [-1,4,0,3,5,2],
     explanation: "Win+M минимизује све, Alt+Tab мења апликацију, Alt+PrtSc копира активни прозор, Ctrl+X сече, Win+E отвара Explorer, Shift+Alt мења језик.",
   },
   {
@@ -600,7 +567,7 @@ export const questions: QuizQuestion[] = [
       "Северни мост",
       "Јужни мост",
     ],
-    correctPairs: {},
+    correctPairs: [-1,-1,-1,-1,-1],
     explanation: "Одговор зависи од конкретне блок шеме у задатку.",
   },
   {
@@ -624,16 +591,7 @@ export const questions: QuizQuestion[] = [
     rightItems: [
       "монитор", "штампач", "скенер", "плотер", "звучник", "тастатура", "миш", "микрофон",
     ],
-    correctPairs: {
-      "монитор": 2,
-      "штампач": 2,
-      "скенер": 1,
-      "плотер": 2,
-      "звучник": 2,
-      "тастатура": 1,
-      "миш": 1,
-      "микрофон": 1,
-    },
+    correctPairs: [1,1,0,1,1,0,0,0],
     explanation: "Улазни: скенер, тастатура, миш, микрофон. Излазни: монитор, штампач, плотер, звучник.",
   },
   {
@@ -646,7 +604,7 @@ export const questions: QuizQuestion[] = [
       "Спољашња спорија магистрала",
     ],
     rightItems: ["(бројеви са слике)"],
-    correctPairs: {},
+    correctPairs: [-1],
     explanation: "FSB/DMI = унутрашња; PCI-E = спољашња бржа; PCI/USB/SATA = спољашња спорија.",
   },
   {
@@ -655,7 +613,7 @@ export const questions: QuizQuestion[] = [
     question: "На слици је блок шема повезивања и комуникације делова матичне плоче (магистрале сивом бојом). На линији поред елемента уписати број са слике.",
     leftItems: ["процесор", "AGP слот", "PCI слот"],
     rightItems: ["(бројеви са слике)"],
-    correctPairs: {},
+    correctPairs: [-1],
     explanation: "Одговор зависи од конкретне блок шеме у задатку.",
   },
 
@@ -668,7 +626,7 @@ export const questions: QuizQuestion[] = [
     id: 52, type: "single", subject: "os", points: 1,
     question: "Препознати који пример представља UNC путању за приступ дељеним ресурсима на удаљеној радној станици у оквиру локалне мреже:",
     options: ["\\\\192.168.0.5\\C$", "//192.168.0.5", "http://192.168.0.1", "ping 192.168.0.1"],
-    correctAnswer: 0,
+    correctAnswers: 0,
     explanation: "UNC путања почиње са \\\\ и садржи ime рачунара/IP адресу и дељени ресурс (нпр. \\\\192.168.0.5\\C$).",
   },
   {
@@ -1498,7 +1456,7 @@ export const questions: QuizQuestion[] = [
   {
     id: 126, type: "fill", subject: "os", points: 1,
     question: "_____________ инсталација захтева коришћење датотеке одговора (answer file).",
-    correctAnswer: "Unattended",
+    correctAnswers: "Unattended",
     explanation: "Unattended (тиха) инсталација аутоматизује процес постављањем Windows-а преко датотеке одговора.",
   },
   {
@@ -1618,12 +1576,7 @@ export const questions: QuizQuestion[] = [
       "4. видети путању и одговор сваког уређаја (кашњење)",
     ],
     rightItems: ["tracert", "ping", "pathping", "ipconfig /all"],
-    correctPairs: {
-      "tracert": 2,
-      "ping": 1,
-      "pathping": 4,
-      "ipconfig /all": 3,
-    },
+    correctPairs: [1,0,3,2],
     explanation: "ping шаље пакете; tracert прати путању; pathping комбинује; ipconfig /all приказује конфигурацију.",
   },
   {
@@ -1632,12 +1585,7 @@ export const questions: QuizQuestion[] = [
     question: "Слика приказује аудио портове на матичној плочи. Испред боје написати број порта (X ако боја није на слици).",
     leftItems: ["Аудио портови са слике"],
     rightItems: ["зелена", "розе", "плава", "сива"],
-    correctPairs: {
-      "зелена": 1,
-      "розе": 2,
-      "плава": 3,
-      "сива": 0,
-    },
+    correctPairs: [0,1,2,-1],
     explanation: "Стандардне боје: зелена = Line-Out; розе = Mic-In; плава = Line-In.",
   },
   {
@@ -1655,12 +1603,7 @@ export const questions: QuizQuestion[] = [
       "Одређивање простора и уношење ставке у директоријум",
       "Системским позивом спецификују се подаци koji ће бити уписани",
     ],
-    correctPairs: {
-      "Ослобађа се простор додељен датотеци": 2,
-      "Системским позивом спецификује се место у меморији где ће се сместити очитани блок": 3,
-      "Одређивање простора и уношење ставке у директоријум": 4,
-      "Системским позивом спецификују се подаци koji ће бити уписани": 1,
-    },
+    correctPairs: [1,2,3,0],
     explanation: "Брисање ослобађа простор; Читање спецификује меморијску локацију; Креирање резервише простор; Упис уписује податке.",
   },
   {
@@ -1676,11 +1619,7 @@ export const questions: QuizQuestion[] = [
       "Размножавају се само преносом са рачунара на рачунар",
       "Представљају се као користан софтвер па их корисник сам инсталира",
     ],
-    correctPairs: {
-      "Модификују разне фајлове и деградирају перформансе рачунара": 2,
-      "Размножавају се само преносом са рачунара на рачунар": 3,
-      "Представљају се као користан софтвер па их корисник сам инсталира": 1,
-    },
+    correctPairs: [1,2,0],
     explanation: "Вируси = деградирају перформансе; Тројанци = маскирају се; Црви = самостално се шире мрежом.",
   },
   {
@@ -1701,13 +1640,7 @@ export const questions: QuizQuestion[] = [
     question: "На слици је конфигурациони прозор за мрежне параметре. Поља за унос статичких адреса означена су бројевима. Уписати број места за сваки параметар.",
     leftItems: ["(поља на слици)"],
     rightItems: ["IP адреса", "DNS2", "SM", "DG", "DNS1"],
-    correctPairs: {
-      "IP адреса": 1,
-      "SM": 2,
-      "DG": 3,
-      "DNS1": 4,
-      "DNS2": 5,
-    },
+    correctPairs: [0,4,1,2,3],
     explanation: "Стандардни редослед у Windows мрежним подешавањима: IP, SM, DG, DNS1, DNS2.",
   },
   {
@@ -1726,11 +1659,7 @@ export const questions: QuizQuestion[] = [
       "Загушење сервера захтевима за приступ",
       "Уцењивачки напад са шифровањем садржаја и захтевом за откупнину",
     ],
-    correctPairs: {
-      "Малициозни код убачен преко рањивих делова сајта или URL": 3,
-      "Загушење сервера захтевима за приступ": 6,
-      "Уцењивачки напад са шифровањем садржаја и захтевом за откупнину": 2,
-    },
+    correctPairs: [2,5,1],
     explanation: "Code injection убацује код; DoS/DDoS загушује сервер; Ransomware шифрује и тражи откупнину.",
   },
   {
@@ -1763,12 +1692,7 @@ export const questions: QuizQuestion[] = [
       "садржи информације потребне за подизање ОС-а",
       "одређују конкретан садржај датотеке (блокове у kojima је смештен садржај)",
     ],
-    correctPairs: {
-      "садржи информације о систему датотека": 2,
-      "садржи атрибуте датотека и указиваче на алокацију датотеке": 4,
-      "садржи информације потребне за подизање ОС-а": 1,
-      "одређују конкретан садржај датотеке (блокове у kojima је смештен садржај)": 3,
-    },
+    correctPairs: [1,3,0,2],
     explanation: "PCB = info о FS; FCB = атрибути датотека; BCB = boot info; структуре алокације = садржај датотека.",
   },
   {
@@ -1787,12 +1711,7 @@ export const questions: QuizQuestion[] = [
       "Омогућава преглед и управљање инсталираним хардверским компонентама и драjверима",
       "Приказује детаље о хардверским ресурсима рачунара, компонентама и софтверском окружењу",
     ],
-    correctPairs: {
-      "Омогућава оптимизацију диска": 1,
-      "Омогућава преглед, извоз, увоз и брисање дигиталних сертификата за тренутног корисника": 5,
-      "Омогућава преглед и управљање инсталираним хардверским компонентама и драjверима": 2,
-      "Приказује детаље о хардверским ресурсима рачунара, компонентама и софтверском окружењу": 3,
-    },
+    correctPairs: [0,4,1,2],
     explanation: "dfrgui = дефрагментација; lusrmgr = локални корисници; devmgmt = Device Manager; msinfo32 = System Info.",
   },
 
@@ -2256,7 +2175,7 @@ export const questions: QuizQuestion[] = [
   {
     id: 192, type: "fill", subject: "maintenance", points: 1,
     question: "Да би се креирао објекат корисник у Active Directory-ју користи се команда ________________ .",
-    correctAnswer: "dsadd user",
+    correctAnswers: "dsadd user",
     explanation: "dsadd user <DN> је командна линија за креирање корисника у Active Directory-ју.",
   },
   {
@@ -2294,12 +2213,7 @@ export const questions: QuizQuestion[] = [
       "вероватноћа да систем ради коректно и да је на располагању у тренутку t",
       "додавање информација у циљу детекције, маскирања или толеранције квара",
     ],
-    correctPairs: {
-      "временска функција, условна вероватноћа да ће систем радити у интервалу [t1,t2]": 2,
-      "вероватноћа да 'покварени' систем може бити доведен у оперативно стање унутар t": 1,
-      "вероватноћа да систем ради коректно и да је на располагању у тренутку t": 4,
-      "додавање информација у циљу детекције, маскирања или толеранције квара": 3,
-    },
+    correctPairs: [1,0,3,2],
     explanation: "Reliability = вероватноћа исправног рада; Serviceability = могућност опоравка; Availability = расположивост; Redundancy = додатне информације.",
   },
   {
@@ -2317,12 +2231,7 @@ export const questions: QuizQuestion[] = [
       "objekat без безбедносних дозвола",
       "прикупљање објеката са заједничким захтевима за администрирање",
     ],
-    correctPairs: {
-      "омогућава пријаву на домен": 2,
-      "омогућава колективно управљање objektima": 1,
-      "objekat без безбедносних дозвола": 3,
-      "прикупљање објеката са заједничким захтевима за администрирање": 4,
-    },
+    correctPairs: [1,0,2,3],
     explanation: "Корисник = пријава; Група = колективно управљање; Контакт = без дозвола; OU = контејнер за администрирање.",
   },
   {
@@ -2340,12 +2249,7 @@ export const questions: QuizQuestion[] = [
       "произвођач задржава право власништва над сваком kopijom",
       "даје право кориsnику да искористи softver у затвореном коду под власничком лиценцом",
     ],
-    correctPairs: {
-      "произвођач не задржава право власништва; право власништва над копијом прелази на корисника": 2,
-      "корисник може вршити измене, ali мора да objavi изворни код свих измена": 3,
-      "произвођач задржава право власништва над сваком kopijom": 1,
-      "даје право кориsnику да искористи softver у затвореном коду под власничком лиценцом": 4,
-    },
+    correctPairs: [1,2,0,3],
     explanation: "Free = слободна; Copyleft = обавеза objave koda; Proprietary = власник задржава права; Permissive = може у closed-source.",
   },
   {
@@ -2363,12 +2267,7 @@ export const questions: QuizQuestion[] = [
       "при prvom покретању kopira све; сваки следећи пут копира све промene у односу на прву",
       "kopira sve podatke са задате локације на задато одредиште",
     ],
-    correctPairs: {
-      "копира само промene у односу на последњу резервну копију bilo kog типа": 2,
-      "покреће се у одређеном временском интервалу": 4,
-      "при prvom покретању kopira све; сваки следећи пут копира све промene у односу на прву": 3,
-      "kopira sve podatke са задате локације на задато одредиште": 1,
-    },
+    correctPairs: [1,3,2,0],
     explanation: "Incremental = само промene od задњег; Differential = sve промene od full; Schedule = временски заказано; Full = sve.",
   },
   {
@@ -2386,12 +2285,7 @@ export const questions: QuizQuestion[] = [
       "Потребно је пратити број штампачких послова у временском периоду",
       "Потребна је укупна процена стабилности система",
     ],
-    correctPairs: {
-      "Потребно је генерисати извештаје о стању хардверских и sofтверских ресурса": 4,
-      "Потребно је пронаћи процес koji највише користи процесор": 1,
-      "Потребно је пратити број штампачких послова у временском периоду": 1,
-      "Потребна је укупна процена стабилности система": 2,
-    },
+    correctPairs: [3,0,0,1],
     explanation: "/res = Resource Monitor; /rel = Reliability Monitor; /report = детаљни извештај система.",
   },
   {
@@ -2575,414 +2469,4 @@ export const questions: QuizQuestion[] = [
     question: "Блок дијаграм рачунарског система са подигнутим Domain Controller-ом најбоље је креирати у Visio-u помоћу темплejta:",
     options: ["Timeline", "Home Plan", "Block Diagram", "Active Directory", "Calendar"],
     correctAnswer: 3,
-    explanation: "Visio Active Directory темплejt садржи готове",
-   }, 
-  {
-    id: 220, type: "single", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "На Слици 1 је стање табеле, а на Слици 2 сортирање. Nakon сортирања табела ће изгледати онако како је представљено на слици:",
-    options: ["Слици 3", "Слици 4", "Слици 5"],
-    correctAnswer: 0,
-    explanation: "На основу примењеног сортирања (Слика 2), резултат одговара Слици 3.",
-  },
-  {
-    id: 221, type: "single", subject: "documentation", points: 2,
-    question: "Jedan наслов није се pojavio унутар аутоматски генерисаног садржаја документа у Word-у. Узрок:",
-    options: [
-      "Аутоматско генерисање садржаја не ради исправно",
-      "Фонт одабраних наслова није добро форматиран",
-      "Наслов koji недостаје није форматиран као наслов",
-      "Положај наслова унутар странице није добро одабран",
-    ],
-    correctAnswer: 2,
-    explanation: "Аутоматски генерисани садржај (TOC) укључује само текст форматиран стилом Heading 1/2/3 итд.",
-  },
-  {
-    id: 222, type: "single", subject: "documentation", points: 2,
-    question: "Анализом текста утврђено је да текст није правилно написан. Исправан формат boldованог dela је:",
-    options: [
-      "размак( један клик на SPACE тастер на тастатури ),након тога",
-      "размак(један клик на SPACE тастер на тастатури), након тога",
-      "размак ( један клик на SPACE тастер на тастатури ) , након тога",
-      "размак (један клик на SPACE тастер на тастатури), након тога",
-    ],
-    correctAnswer: 3,
-    explanation: "Исправно: размак иза зареза, а заграде без размака пре сад­ржaja унутар заграда, зарез непосредно иза затворене заграде.",
-  },
-  {
-    id: 223, type: "single", subject: "documentation", points: 2,
-    question: "Исправан начин преношења нацртаних объеката из Visio у Word је:",
-    options: [
-      "селектовати у Visio, Ctrl+V, изабрати позицију у Word, Ctrl+C",
-      "селектовати у Visio, Ctrl+C, изабрати позицију у Word, Ctrl+V",
-      "снимити фajl у Visio, у Word инсертовати фajl преко Ctrl+O",
-    ],
-    correctAnswer: 1,
-    explanation: "Copy (Ctrl+C) у Visio, затim Paste (Ctrl+V) у Word – стандардна Copy-Paste операција.",
-  },
-  {
-    id: 224, type: "single", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "Объекат на слици нацртан је у размери 1:100. Међу одговорима заокружити onaj koji представља дужину котне линије на слици.",
-    options: ["3,2cm", "0,32cm", "32cm", "0,32m"],
-    correctAnswer: 0,
-    explanation: "Ако је стварна мера 3,2 m → 3,2 m / 100 = 0,032 m = 3,2 cm на цртежу.",
-  },
-  {
-    id: 225, type: "single", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "Oggekат у природи је 14,5 m × 10 m. Нацртати у размери 1:50. Потребан формат папира:",
-    options: ["А3", "А4", "А5", "Б5"],
-    correctAnswer: 1,
-    explanation: "14,5/50=29cm; 10/50=20cm → 290mm×200mm; А4 (210×297mm) у landscape може да прими (297>290, 210>200).",
-  },
-  {
-    id: 226, type: "single", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "На електричној шеми ако се положај потенциометра P (1 KΩ) из положаja 1 пребаци у положaj 2. Шта се дешава са LED диодом D?",
-    options: [
-      "диода светли јачим интензитетом",
-      "интензитет светлости зависи od програма у микроконтролеру",
-      "диода неће светлети",
-    ],
-    correctAnswer: 2,
-    explanation: "У положаjу 2 потенциометар потпуно прекида струjно коло кроз LED → диода не светли.",
-  },
-  {
-    id: 227, type: "single", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "На приказаној шеми DIN је дигитални улаз микрорачунара. Шта се дешава када је тастер отворен? [pull-up резистор R]",
-    options: [
-      "Отпорник R на дигиталном улазу обезбеђује логичку '0'",
-      "Отпорник R на дигиталном улазу обезбеђује логичку '1'",
-      "Отпорник R на дигиталном улазу обезбеђује пад напона",
-    ],
-    correctAnswer: 1,
-    explanation: "Pull-up резистор R повезује DIN на VCC; кад је тастер отворен, нема пута за GND → на улазу је логичка '1'.",
-  },
-  {
-    id: 228, type: "single", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "На приказаноj шеми DIN је дигитални улаз микроконтролера. Шта се дешава када је тастер отворен? [pull-up резистор R]",
-    options: [
-      "Отпорник R на дигиталном улазу обезбеђује логичку '0'",
-      "Отпорник R на дигиталном улазу обезбеђује логичку '1'",
-      "Отпорник R на дигиталном улазу обезбеђује пад напона",
-    ],
-    correctAnswer: 1,
-    explanation: "Pull-up R → VCC: кад је тастер отворен → DIN = '1' (HIGH).",
-  },
-
-  // Multi-choice (229–235)
-  {
-    id: 229, type: "multi", subject: "documentation", points: 2,
-    question: "Сваки пројекат pojedinaчне области састоји се od следећих делова:",
-    options: [
-      "општа документација",
-      "идејна документација",
-      "графичка документација",
-      "текстуална документација",
-      "нумеричка документација",
-      "финансијска документација",
-      "припремна документација",
-      "завршна документација",
-    ],
-    correctAnswer: [0, 2, 3, 4],
-    explanation: "Пројекат pojedinaчне области садржи: општу, текстуалну, графичку и нумеричку документацију.",
-  },
-  {
-    id: 230, type: "multi", subject: "documentation", points: 2,
-    question: "Текстуални dio пројекта чине:",
-    options: [
-      "основе объекта",
-      "технички опис",
-      "прорачуни",
-      "технички услови",
-    ],
-    correctAnswer: [1, 2, 3],
-    explanation: "Текстуални dio: технички опис, прорачуни и технички услови (основе объекта спадају у графички dio).",
-  },
-  {
-    id: 231, type: "multi", subject: "documentation", points: 2,
-    question: "Идejно решење треба да садржи:",
-    options: [
-      "приказ планиране концепције объекта",
-      "цртеже у размери 1:50",
-      "шеме и детаље объекта",
-      "врсту и намену грађевинског объекта",
-    ],
-    correctAnswer: [0, 3],
-    explanation: "Идejno решење садржи приказ концепције и врсту/намену объекта. Детаљни цртежи и шеме су за каснијих фазе пројектовања.",
-  },
-  {
-    id: 232, type: "multi", subject: "documentation", points: 2,
-    question: "Заокружи одговарајуће електронске формате koji се односе на електронски документ:",
-    options: [".pdf", ".dwg", ".dot", ".png", ".dwf", ".dwfx", ".ppt", ".jpg"],
-    correctAnswer: [0, 3, 7],
-    explanation: "Електронски документ са квалификованим потписом: .pdf је примарни формат; .png и .jpg су графички формати koji се прихватају.",
-  },
-  {
-    id: 233, type: "multi", subject: "documentation", points: 2,
-    question: "У основне елементе техничког цртежа не спадају:",
-    options: [
-      "скица техничког цртежа",
-      "оквир цртежа",
-      "радни задатак",
-      "заглавље",
-    ],
-    correctAnswer: [2],
-    explanation: "Основни елементи техничког цртежа: оквир, заглавље, скица. 'Радни задатак' није елемент техничког цртежа.",
-  },
-  {
-    id: 234, type: "multi", subject: "documentation", points: 2,
-    question: "Koje vrste инсталација у електротехници је потребно дефинисати у техничкој документацији?",
-    options: [
-      "електроенергетску инсталацију",
-      "нумеричку документацију",
-      "громобранску документацију",
-      "идejну документацију",
-      "телекомуникациону инсталацију",
-      "сигналну документацију",
-      "графичку документацију",
-      "текстуалну документацију",
-    ],
-    correctAnswer: [0, 2, 4, 5],
-    explanation: "Електротехничке инсталације у техничкој документацији: електроенергетска, громобранска, телекомуникациона и сигнална.",
-  },
-  {
-    id: 235, type: "multi", subject: "documentation", points: 2,
-    question: "За израду корисничког упутства треба користити:",
-    options: [
-      "LibreOffice Writer",
-      "DaVinci Resolve",
-      "HitFilm Express",
-      "Microsoft Word",
-      "Adobe Premier Rush",
-      "Google Spreadsheets",
-    ],
-    correctAnswer: [0, 3],
-    explanation: "Корисничко упутство је текстуални документ; LibreOffice Writer и Microsoft Word su namenski alati.",
-  },
-
-  // Fill-in (236–238)
-  {
-    id: 236, type: "fill", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "На слици је котирана просторија (димензије у cm). Димензија просторије је _______ × ______ cm, ширина врата је ______ cm, ширина прозора је ______ cm, дебљина зида је _______ cm.",
-    items: ["дужина просторије", "ширина просторије", "ширина врата", "ширина прозора", "дебљина зида"],
-    correctAnswer: ["(из слике)", "(из слике)", "(из слике)", "(из слике)", "(из слике)"],
-    explanation: "Димензије се очитавају са котиране шеме просторије на слици.",
-  },
-  {
-    id: 237, type: "fill", subject: "documentation", points: 3,
-    question: "На извору напона вршена су мерења: 10V(×7), 10,1V(×4), 9,9V(×3), 10,2V(×2), 9,8V(×2), 10,3V(×1), 9,7V(×1). Средња вредност излазног напона је _________.",
-    correctAnswer: "10,005 V ≈ 10 V",
-    explanation: "Средња вредност = Σ(U×N)/Σ(N) = (70+40,4+29,7+20,4+19,6+10,3+9,7)/20 = 200,1/20 = 10,005 V",
-  },
-  {
-    id: 238, type: "fill", subject: "documentation", points: 3,
-    question: "Мерења напона: 10,4V(×1), 9,6V(×1), 10,0V(×2), 10,1V(×4), 10,3V(×2). Колико износи напон при чијем мерењу је направљена нajveca грешка? Највећа грешка је када је измерен напон од __________.",
-    correctAnswer: "9,6 V",
-    explanation: "Средња вредност = (10,4+9,6+20+40,4+20,6)/10 = 101/10 = 10,1 V. Нajveca devijacija: |9,6−10,1| = 0,5 (najveća).",
-  },
-
-  // Match / Order (239–251)
-  {
-    id: 239, type: "match", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "На слици су bројевима означени делови техничког цртежа. На линијама поред назива упиши број елемента са слике koji predstavlja.",
-    leftItems: ["(бројеви са слике)"],
-    rightItems: ["Котни број", "Стрелица", "Котна линија", "Помоћна котна линија"],
-    correctAnswer: {},
-    explanation: "Одговор зависи od конкретне слике техничког цртежа у задатку.",
-  },
-  {
-    id: 240, type: "match", subject: "documentation", points: 2,
-    question: "Формати папира (нумерисани у табели, dim у mm). На линији поред dim уписати број формата.",
-    leftItems: [
-      "1. формат А4",
-      "2. формат А3",
-      "3. формат А2",
-      "4. формат А1",
-      "5. формат А0",
-    ],
-    rightItems: [
-      "841 × 1188",
-      "297 × 420",
-      "594 × 840",
-      "420 × 594",
-      "210 × 297",
-    ],
-    correctAnswer: {
-      "841 × 1188": 5,
-      "297 × 420": 2,
-      "594 × 840": 3,
-      "420 × 594": 4,
-      "210 × 297": 1,
-    } as Record<string, number>,
-    explanation: "ISO 216: A0=841×1188; A1=594×841; A2=420×594; A3=297×420; A4=210×297 mm.",
-  },
-  {
-    id: 241, type: "match", subject: "documentation", points: 2,
-    question: "У табели су врсте линија (нумерисане), а desно намене. Испред намене уписати број врсте линије.",
-    leftItems: [
-      "1. Пуна дебела линија",
-      "2. Пуна танка",
-      "3. Испрекидана танка",
-      "4. Црта-тачка-црта, танка",
-    ],
-    rightItems: [
-      "Цртање заклоњених контура и ивица",
-      "Осне линије, симетрале и путање",
-      "Контуре и незаклоњене ивице",
-      "Котне и помоћне линије, показне линије, шрафура",
-    ],
-    correctAnswer: {
-      "Цртање заклоњених контура и ивица": 3,
-      "Осне линије, симетрале и путање": 4,
-      "Контуре и незаклоњене ивице": 1,
-      "Котне и помоћне линије, показне линије, шрафура": 2,
-    } as Record<string, number>,
-    explanation: "Пуна дебела = контуре; Пуна танка = котне линије; Испрекидана = заклоњене контуре; Осна = осне линије.",
-  },
-  {
-    id: 242, type: "match", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "У табели су симболи електричних компоненти (бројеви 1,2,3), а desно су називи. Испред назива уписати број симбола.",
-    leftItems: ["(симболи са слике 1, 2, 3)"],
-    rightItems: ["Зенер диода", "LE диода", "Фотодиода"],
-    correctAnswer: {},
-    explanation: "Одговор зависи od конкретних симбола на слици у задатку.",
-  },
-  {
-    id: 243, type: "match", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "У табели су симболи транзистора (1, 2, 3), а desно назivi. Испред назива уписати број симбола.",
-    leftItems: ["(симболи са слике 1, 2, 3)"],
-    rightItems: ["Фототранзистор", "НПН транзистор", "ПНП транзистор"],
-    correctAnswer: {},
-    explanation: "Одговор зависи od конкретних симбола на слици у задатку.",
-  },
-  {
-    id: 244, type: "match", subject: "documentation", points: 2,
-    imageQuestion: true,
-    question: "У табели су симболи извора напајања (1, 2, 3), а desно назivi. Испред назива уписати број симбола.",
-    leftItems: ["(симболи са слике 1, 2, 3)"],
-    rightItems: ["DC напајање", "Батерија", "AC напајање"],
-    correctAnswer: {},
-    explanation: "Одговор зависи od конкретних симбола на слици у задатку.",
-  },
-  {
-    id: 245, type: "order", subject: "documentation", points: 3,
-    question: "Поређати кораке за аутоматско креирање садржаja документа у Word-у хронолошким редоследом.",
-    items: [
-      "Избор формата за приказивање садржаja",
-      "Означавање бројева страница",
-      "Унутар References изабрати Table of Contents",
-      "Постављање показивача на место где се предвиђа садржaj",
-      "Избор и форматирање наслова и поднаслова",
-    ],
-    correctAnswer: [4, 3, 2, 0, 1],
-    explanation: "Редослед: форматирати наслове → поставити курзор → References → TOC → изабрати формат → нумерисати странице.",
-  },
-  {
-    id: 246, type: "order", subject: "documentation", points: 3,
-    question: "У техничкoj документацији пројекти су сложени у свесци по утврђеном редоследу. Навести тачан редослед (prvi = 1).",
-    items: [
-      "Спољно уређење са синхрон-планом инсталација и прикључака, пejsazna архитектура и хортикултура",
-      "Архитектура",
-      "Конструкција и грађевински пројекти",
-      "Припремни радови (рушење, земљани радови, осигурање темељне јаме)",
-      "Хидротехничке инсталације",
-      "Телекомуникационе и сигналне инсталације",
-      "Електроенергетске инсталације",
-      "Машинске инсталације",
-      "Саобраћај и саобраћаjна сигнализација",
-      "Технологија",
-    ],
-    correctAnswer: [3, 1, 2, 4, 7, 6, 5, 9, 8, 0],
-    explanation: "Законски редослед: Припремни → Архитектура → Конструкција → Хидро → Машинске → Електро → Телекомуникационе → Технологиjа → Саобраћaj → Спољно уређење.",
-  },
-  {
-    id: 247, type: "order", subject: "documentation", points: 3,
-    question: "Делови пројекта раде се одређеним редоследом. Навести редослед (prvi = 1).",
-    items: [
-      "идejни пројекат",
-      "пројекат за грађевинску дозволу",
-      "идejно решење",
-      "пројекат за извођење",
-      "генерални пројекат",
-      "пројекат изведеног стања",
-    ],
-    correctAnswer: [4, 2, 0, 1, 3, 5],
-    explanation: "Редослед: Генерални пројекат → Идejno решење → Идejni пројекат → Пројекат за грађевинску дозволу → Пројекат за извођење → Пројекат изведеног стања.",
-  },
-  {
-    id: 248, type: "match", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "На електричноj шеми бројевима су означене компоненте. Испред назива уписати број (X ако не постоји).",
-    leftItems: ["(бројеви са слике)"],
-    rightItems: [
-      "Извор наизменичног напона",
-      "Батерија",
-      "Потенциометар",
-      "Фотодиода",
-      "ЛЕ диода",
-      "Уземљење",
-      "Отпорник",
-    ],
-    correctAnswer: {},
-    explanation: "Одговор зависи od конкретне шеме на слици у задатку.",
-  },
-  {
-    id: 249, type: "match", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "Предрачун за набавку компоненти. Excel формуле и ћелије. Испред ћелије уписати редни број одговарajуће функцијe (X ако нема).",
-    leftItems: [
-      "1. =B2+D2",
-      "2. =B4+D4",
-      "3. =C2*D2",
-      "4. =C4*D4",
-      "5. =SUM(E2:E4)",
-      "6. =SUM(E2;E4)",
-    ],
-    rightItems: ["Е2", "Е3", "Е4", "Е6"],
-    correctAnswer: {
-      "Е2": 3,
-      "Е3": 0,
-      "Е4": 4,
-      "Е6": 5,
-    } as Record<string, number>,
-    explanation: "E2=цена (количина×цена за ред 2)=C2*D2; E3=B2+D2 (зависи od структуре табеле); E4=C4*D4; E6=SUM(E2:E4) или SUM(E2;E4).",
-  },
-  {
-    id: 250, type: "match", subject: "documentation", points: 3,
-    imageQuestion: true,
-    question: "Ћелиja маркирана сивом боjoм у Word табели (Слика 1) форматирана функцијом (Слика 2). Испред функцијe уписати редни број резултата koji одговара.",
-    leftItems: ["1. 6", "2. 9", "3. 3", "4. 12"],
-    rightItems: ["SUM(ABOVE)", "SUM(LEFT)", "SUM(BELOW)", "SUM(RIGHT)"],
-    correctAnswer: {
-      "SUM(ABOVE)": 1,
-      "SUM(LEFT)": 3,
-      "SUM(BELOW)": 4,
-      "SUM(RIGHT)": 2,
-    } as Record<string, number>,
-    explanation: "Зависи od слике табеле: SUM(ABOVE) сабира ћелије изнад маркиране; SUM(LEFT) лево итд.",
-  },
-  {
-    id: 251, type: "order", subject: "documentation", points: 4,
-    question: "Написати редослед корака (1, 2, 3...) да се нацртани модел система са микрорачунаром пребаци у Word документ као слика.",
-    items: [
-      "Инсертовати снимљену слику у Word документ",
-      "Стартовати програм Paint",
-      "Селектовати dio слике у Paint-у",
-      "Притиснути CTRL+V на тастатури",
-      "Crop селектованог дела слике у Paint-у",
-      "Print screen нацртаног модела система са микрорачунаром",
-      "Снимити обрађену слику у Paint-у",
-    ],
-    correctAnswer: [5, 1, 3, 2, 4, 6, 0],
-    explanation: "Редослед: Print Screen → отвори Paint → Ctrl+V (налепи) → Селектуjи → Crop → Сними → Инсертуji у Word.",
-  },
-];
-
+    explanation: "Visio Active Directory темплejt садржи готове
