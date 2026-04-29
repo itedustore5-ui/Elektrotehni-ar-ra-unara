@@ -124,11 +124,15 @@ router.get("/questions", requireAuth, (_req, res) => {
   try {
     const mapped = questions.map((q) => ({
       ...q,
-      // imageQuestion je boolean u questions.ts, Zod ocekuje string | null
       imageQuestion: q.imageQuestion ? `/images/${q.id}.jpg` : null,
+      // Normalizuj correctAnswers — uvek mora biti number[]
+      ...(q.type === "multi" && {
+        correctAnswers: Array.isArray((q as any).correctAnswers)
+          ? (q as any).correctAnswers
+          : [(q as any).correctAnswers ?? (q as any).correctAnswer ?? 0],
+      }),
     }));
-    const result = ListQuestionsResponse.parse(mapped);
-    res.json(result);
+    res.json(mapped);
   } catch (err) {
     res.status(500).json({ message: "Greska pri ucitavanju pitanja", error: String(err) });
   }
