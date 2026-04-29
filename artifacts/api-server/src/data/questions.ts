@@ -1,36 +1,41 @@
 export type SingleQ = {
-  id: number; type: "single"; question: string;
-  options: string[]; correctAnswer: number;
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "single"; subject: string; points: number;
+  question: string; options: string[]; correctAnswer: number;
+  explanation: string; imageQuestion?: boolean;
 };
 export type MultiQ = {
-  id: number; type: "multi"; question: string;
-  options: string[]; correctAnswers: number[];
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "multi"; subject: string; points: number;
+  question: string; options: string[]; correctAnswers: number[];
+  explanation: string; imageQuestion?: boolean;
 };
 export type FillQ = {
-  id: number; type: "fill"; question: string;
-  correctText: string; hint?: string;
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "fill"; subject: string; points: number;
+  question: string; correctAnswer: string | string[];
+  items?: string[]; hint?: string;
+  explanation: string; imageQuestion?: boolean;
 };
 export type MatchQ = {
-  id: number; type: "match"; question: string;
-  leftItems: string[]; rightItems: string[];
-  correctPairs: number[];
-  explanation: string; imageQuestion?: string | null;
+  id: number; type: "match"; subject: string; points: number;
+  question: string; leftItems: string[]; rightItems: string[];
+  correctPairs: Record<string, number>;
+  explanation: string; imageQuestion?: boolean;
 };
 export type OrderQ = {
-  id: number; type: "order"; question: string;
-  items: string[]; correctOrder: number[];
+  id: number; type: "order"; subject: string; points: number;
+  question: string; items: string[]; correctOrder: number[];
   hasSkips?: boolean;
-  explanation: string; imageQuestion?: string | null;
+  explanation: string; imageQuestion?: boolean;
 };
 export type QuizQuestion = SingleQ | MultiQ | FillQ | MatchQ | OrderQ;
 
-const jpg = (id: number) => `/images/${id}.jpg`;
-
 export const questions: QuizQuestion[] = [
-   {
+
+  // ─────────────────────────────────────────────────────────────
+  //  РАЧУНАРСКИ ХАРДВЕР  (1 – 51)
+  // ─────────────────────────────────────────────────────────────
+
+  // Single-choice (1–29)
+  {
     id: 1, type: "single", subject: "hardware", points: 1,
     question: "Приликом уклањања процесора са матичне плоче, први корак је:",
     options: [
@@ -198,7 +203,7 @@ export const questions: QuizQuestion[] = [
       "SSD капацитета 512GB и HDD капацитета 2TB",
     ],
     correctAnswer: 1,
-    explanation: "На основу приказа у Speccy програму, рачунар има SSD 256GB и HDD 2TB (приближне вредности).",
+    explanation: "На основу приказа у Speccy програму, рачунар има SSD 256GB и HDD 2TB.",
   },
   {
     id: 19, type: "single", subject: "hardware", points: 1,
@@ -207,10 +212,10 @@ export const questions: QuizQuestion[] = [
       "заменити напајање",
       "заменити извор непрекидног напајања (UPS)",
       "заменити CMOS батерију",
-      "поново поставити RАМ",
+      "поново поставити РАМ",
     ],
     correctAnswer: 3,
-    explanation: "Три узастопна звучна сигнала у BIOS-у (нпр. AMI BIOS) означавају грешку RAM меморије; решење је поново поставити модуле.",
+    explanation: "Три узастопна звучна сигнала у BIOS-у означавају грешку RAM меморије; решење је поново поставити модуле.",
   },
   {
     id: 20, type: "single", subject: "hardware", points: 1,
@@ -273,7 +278,7 @@ export const questions: QuizQuestion[] = [
       "Рачунар има два меморијска слота и у један од њих уместо постојећег модула треба убацити модул од 8GB",
     ],
     correctAnswer: 3,
-    explanation: "Са два слота и по 4GB у сваком, замена једног са 8GB даје 4+8=12GB.",
+    explanation: "Са два слота и по 4GB у сваком, заменаједног са 8GB даје 4+8=12GB.",
   },
   {
     id: 25, type: "single", subject: "hardware", points: 2,
@@ -333,21 +338,21 @@ export const questions: QuizQuestion[] = [
     id: 30, type: "multi", subject: "hardware", points: 2,
     question: "Портови који омогућавају пренос и видео и аудио сигнала су:",
     options: ["HDMI", "VGA", "DVI", "S-video"],
-    correctAnswer: [0],
-    explanation: "HDMI пренosi и видео и аудио сигнал. VGA, DVI и S-video преносе само видео.",
+    correctAnswers: [0],
+    explanation: "HDMI преноси и видео и аудио сигнал. VGA, DVI и S-video преносе само видео.",
   },
   {
     id: 31, type: "multi", subject: "hardware", points: 2,
     question: "Типови конектора који се могу употребити за повезивање екстерног складишног простора на рачунар су:",
     options: ["Thunderbolt", "SATA", "еSATA", "DVI", "HDMI"],
-    correctAnswer: [0, 2],
-    explanation: "Thunderbolt и eSATA су намењени повезивању екстерних уређаја за складиштење. Интерни SATA, DVI и HDMI нису у ту сврху.",
+    correctAnswers: [0, 2],
+    explanation: "Thunderbolt и eSATA су намењени повезивању екстерних уређаја за складиштење.",
   },
   {
     id: 32, type: "multi", subject: "hardware", points: 2,
     question: "Издвојити формате матичних плоча који су се користили од почетка склапања рачунарских конфигурација до данас:",
     options: ["Mini IBM", "АTX", "LPX", "IBM-X", "WDX"],
-    correctAnswer: [1, 2],
+    correctAnswers: [1, 2],
     explanation: "ATX и LPX су стварни стандарди матичних плоча; Mini IBM, IBM-X и WDX не постоје као стандарди.",
   },
   {
@@ -359,8 +364,8 @@ export const questions: QuizQuestion[] = [
       "Претпоставком да је отказао пуњач батерије",
       "Прикључењем пуњача другог лаптопа",
     ],
-    correctAnswer: [2, 3],
-    explanation: "Логичан prvi корак је претпоставити да пуњач не ради и тестирати то прикључивањем другог пуњача.",
+    correctAnswers: [2, 3],
+    explanation: "Логичан први корак је претпоставити да пуњач не ради и тестирати то прикључивањем другог пуњача.",
   },
   {
     id: 34, type: "multi", subject: "hardware", points: 2,
@@ -372,7 +377,7 @@ export const questions: QuizQuestion[] = [
       "RЈ45 конектор",
       "клешта за кримповање",
     ],
-    correctAnswer: [3, 4],
+    correctAnswers: [3, 4],
     explanation: "За замену/поправку RJ45 конектора на Cat5 каблу потребни су нови RJ45 конектор и клешта за кримповање.",
   },
   {
@@ -388,8 +393,8 @@ export const questions: QuizQuestion[] = [
       "има почетни радни такт (стандард PCI-E 1.0) 2,5 GHz",
       "обезбеђује пренос података у пуном-дуплексу (Full-duplex)",
     ],
-    correctAnswer: [0, 3, 6, 7],
-    explanation: "PCI-E користи серијски пренос у пуном дуплексу, може имати 1/4/8/16 стаза (lanes) и PCI-E 1.0 ради на 2,5 GHz (GT/s).",
+    correctAnswers: [0, 3, 6, 7],
+    explanation: "PCI-E користи серијски пренос у пуном дуплексу, може имати 1/4/8/16 стаза и PCI-E 1.0 ради на 2,5 GHz.",
   },
   {
     id: 36, type: "multi", subject: "hardware", points: 3,
@@ -402,8 +407,8 @@ export const questions: QuizQuestion[] = [
       "Саопштава околини резултате добијене извршењем програма",
       "Управљање разменом информација између оперативне меморије и аритметичко-логичке јединице",
     ],
-    correctAnswer: [1, 3, 5],
-    explanation: "Управљачка јединица управља читањем/уписом у RAM, радом ALU и разменом података измеђ RAM и ALU.",
+    correctAnswers: [1, 3, 5],
+    explanation: "Управљачка јединица управља читањем/уписом у RAM, радом ALU и разменом података између RAM и ALU.",
   },
   {
     id: 37, type: "multi", subject: "hardware", points: 3,
@@ -416,7 +421,7 @@ export const questions: QuizQuestion[] = [
       "користећи неки од бесплатних програма попут CPU-Z",
       "у command prompt-у, унети команду: wmic baseboard get product,Manufacturer,version,serialnumber",
     ],
-    correctAnswer: [1, 4, 5],
+    correctAnswers: [1, 4, 5],
     explanation: "msinfo32, CPU-Z и wmic baseboard команда приказују информације о матичној плочи.",
   },
 
@@ -436,12 +441,12 @@ export const questions: QuizQuestion[] = [
       "Ctrl fn alt",
       "F3 F5 F12",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Strelica levo, Strelica gore": 4,
       "1 7 A H f": 1,
       "Ctrl fn alt": 3,
       "F3 F5 F12": 2,
-    } as Record<string, number>,
+    },
     explanation: "Стрелице су тастери за навигацију, буквено-нумерички су алфанумерички, Ctrl/fn/alt су контролни, F-тастери су функцијски.",
   },
   {
@@ -450,7 +455,7 @@ export const questions: QuizQuestion[] = [
     question: "На слици су бројевима означени елементи матичне плоче. На линију поред назива елемента уписати број одговарајућег елемента са слике.",
     leftItems: ["процесор", "VGA", "PCexpress", "SATA конектори", "конектор за напајање", "DVI"],
     rightItems: ["(бројеви са слике)"],
-    correctAnswer: {},
+    correctPairs: {},
     explanation: "Одговор зависи од конкретне слике матичне плоче у задатку.",
   },
   {
@@ -459,17 +464,17 @@ export const questions: QuizQuestion[] = [
     question: "На слици су бројевима означене компоненте графичког адаптера. На линију поред назива компоненте уписати одговарајући број са слике.",
     leftItems: ["DVI", "конектори за матичну плочу", "VGA", "GPU са хладњаком", "HDMI", "VRAM"],
     rightItems: ["(бројеви са слике)"],
-    correctAnswer: {},
+    correctPairs: {},
     explanation: "Одговор зависи од конкретне слике графичке картице у задатку.",
   },
   {
     id: 41, type: "match", subject: "hardware", points: 3,
     imageQuestion: true,
-    question: "Корисник жели 24 GB DDR4 RAM у двоканалном режиму. Канал А: слот 1 и 3; Канал В: слот 2 и 4. Модули у истом каналу морају бити исти. Уз минималну потрошњу новца распоредите модуле у слотове (уписати редни број модула из табеле).",
+    question: "Корисник жели 24 GB DDR4 RAM у двоканалном режиму. Канал А: слот 1 и 3; Канал В: слот 2 и 4. Модули у истом каналу морају бити исти. Уз минималну потрошњу новца распоредите модуле у слотове.",
     leftItems: ["слот 1", "слот 2", "слот 3", "слот 4"],
     rightItems: ["(из табеле модула на слици)"],
-    correctAnswer: {},
-    explanation: "За 24 GB двоканално, нпр. 2×8 GB у каналу А (слот 1 и 3) и 2×4 GB у каналу В (слот 2 и 4), или слично – зависи од понуђених модула на слици.",
+    correctPairs: {},
+    explanation: "За 24 GB двоканално, нпр. 2×8 GB у каналу А (слот 1 и 3) и 2×4 GB у каналу В (слот 2 и 4).",
   },
   {
     id: 42, type: "match", subject: "hardware", points: 3,
@@ -488,15 +493,13 @@ export const questions: QuizQuestion[] = [
       "5 Gbps",
       "600 MB/s",
     ],
-    correctAnswer: {
+    correctPairs: {
       "10 Gbps": 3,
       "3,938 GB/s (~4 GB)": 4,
-      "7,877 GB/s (~8 GB)": 0,
       "500 MB/s": 1,
-      "5 Gbps": 0,
       "600 MB/s": 2,
-    } as Record<string, number>,
-    explanation: "USB 3.2 Gen2 = 10 Gbps; PCI-E 3.0 x4 ≈ 4 GB/s; SATA 3.0 = 600 MB/s; PCI-E 2.0 x1 = 500 MB/s; 7,877 GB/s и 5 Gbps = X.",
+    },
+    explanation: "USB 3.2 Gen2 = 10 Gbps; PCI-E 3.0 x4 ≈ 4 GB/s; SATA 3.0 = 600 MB/s; PCI-E 2.0 x1 = 500 MB/s.",
   },
   {
     id: 43, type: "match", subject: "hardware", points: 3,
@@ -513,12 +516,12 @@ export const questions: QuizQuestion[] = [
       "Недавно инсталирани меморијски модул се не види",
       "Гласни и необични звуци кликтања долазе из кућишта",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Рачунар се прегрева и искључује": 1,
       "Напајање је постављено али се рачунар упорно гаси": 3,
       "Недавно инсталирани меморијски модул се не види": 4,
       "Гласни и необични звуци кликтања долазе из кућишта": 2,
-    } as Record<string, number>,
+    },
     explanation: "Прегревање → вентилатори; гашење → напајање; RAM не виђен → провера постављености; кликтање → страна тела или HDD.",
   },
   {
@@ -533,14 +536,14 @@ export const questions: QuizQuestion[] = [
       "6. плава",
     ],
     rightItems: ["+ 12 V", "+5V", "+ 3.3 V", "GND", "PC_ON", "-12 V"],
-    correctAnswer: {
+    correctPairs: {
       "+ 12 V": 4,
       "+5V": 1,
       "+ 3.3 V": 2,
       "GND": 3,
       "PC_ON": 5,
       "-12 V": 6,
-    } as Record<string, number>,
+    },
     explanation: "ATX стандард: жута=+12V, црвена=+5V, наранџаста=+3,3V, црна=GND, зелена=PS_ON, плава=-12V.",
   },
   {
@@ -549,12 +552,12 @@ export const questions: QuizQuestion[] = [
     question: "Улога звучне картице укључује А/Д конверзију (аналог → дигитал) у три корака. На слици је шематски приказ, а на десној страни су кораци. Уписати број блока са слике испред одговарајућег корака.",
     leftItems: ["Блок 1 (Sampling – Одмеравање)", "Блок 2 (Quantization – Квантизација)", "Блок 3 (Coding – Кодирање)"],
     rightItems: ["Кодирање", "Квантизација", "Одмеравање"],
-    correctAnswer: {
+    correctPairs: {
       "Кодирање": 3,
       "Квантизација": 2,
       "Одмеравање": 1,
-    } as Record<string, number>,
-    explanation: "Кораци А/Д конверзије редом: 1. Одмеравање (Sampling), 2. Квантизација (Quantization), 3. Кодирање (Coding).",
+    },
+    explanation: "Кораци А/Д конверзије редом: 1. Одмеравање, 2. Квантизација, 3. Кодирање.",
   },
   {
     id: 46, type: "match", subject: "hardware", points: 3,
@@ -575,14 +578,14 @@ export const questions: QuizQuestion[] = [
       "Прелазак на други језик на тастатури",
       "Копира садржај активног прозора у Clipboard",
     ],
-    correctAnswer: {
-      "Кретање из једне отворене апликације у другу": 2,
+    correctPairs: {
+      "Кретање изједне отворене апликације у другу": 2,
       "Отвара програм File Explorer": 5,
       "Минимизује све отворене прозоре": 1,
       "Cut – при премештању фајлова и фолдера": 4,
       "Прелазак на други језик на тастатури": 6,
       "Копира садржај активног прозора у Clipboard": 3,
-    } as Record<string, number>,
+    },
     explanation: "Win+M минимизује све, Alt+Tab мења апликацију, Alt+PrtSc копира активни прозор, Ctrl+X сече, Win+E отвара Explorer, Shift+Alt мења језик.",
   },
   {
@@ -597,12 +600,12 @@ export const questions: QuizQuestion[] = [
       "Северни мост",
       "Јужни мост",
     ],
-    correctAnswer: {},
-    explanation: "Одговор зависи од конкретне блок шеме у задатку. Типично: процесор извршава инструкције, RAM је радна меморија итд.",
+    correctPairs: {},
+    explanation: "Одговор зависи од конкретне блок шеме у задатку.",
   },
   {
     id: 48, type: "order", subject: "hardware", points: 3,
-    question: "Поређати меморије рачунарског система prema brzini. Најбржу означити бројем 1, следећу бројем 2 итд.",
+    question: "Поређати меморије рачунарског система према brzини. Најбржу означити бројем 1, следећу бројем 2 итд.",
     items: [
       "Оперативна меморија",
       "Уграђени L1 кеш на процесору",
@@ -611,7 +614,7 @@ export const questions: QuizQuestion[] = [
       "Екстерни хард диск",
       "Спољашњи L2 кеш на процесору",
     ],
-    correctAnswer: [3, 1, 5, 0, 2, 4],
+    correctOrder: [3, 1, 5, 0, 2, 4],
     explanation: "По брзини (опадајуће): Регистри > L1 кеш > L2 кеш > Оперативна меморија > Хард диск > Екстерни хард диск.",
   },
   {
@@ -621,7 +624,7 @@ export const questions: QuizQuestion[] = [
     rightItems: [
       "монитор", "штампач", "скенер", "плотер", "звучник", "тастатура", "миш", "микрофон",
     ],
-    correctAnswer: {
+    correctPairs: {
       "монитор": 2,
       "штампач": 2,
       "скенер": 1,
@@ -630,7 +633,7 @@ export const questions: QuizQuestion[] = [
       "тастатура": 1,
       "миш": 1,
       "микрофон": 1,
-    } as Record<string, number>,
+    },
     explanation: "Улазни: скенер, тастатура, миш, микрофон. Излазни: монитор, штампач, плотер, звучник.",
   },
   {
@@ -643,8 +646,8 @@ export const questions: QuizQuestion[] = [
       "Спољашња спорија магистрала",
     ],
     rightItems: ["(бројеви са слике)"],
-    correctAnswer: {},
-    explanation: "Одговор зависи од конкретне блок шеме на слици. FSB/DMI = унутрашња; PCI-E = спољашња бржа; PCI/USB/SATA = спољашња спорија.",
+    correctPairs: {},
+    explanation: "FSB/DMI = унутрашња; PCI-E = спољашња бржа; PCI/USB/SATA = спољашња спорија.",
   },
   {
     id: 51, type: "match", subject: "hardware", points: 4,
@@ -652,7 +655,7 @@ export const questions: QuizQuestion[] = [
     question: "На слици је блок шема повезивања и комуникације делова матичне плоче (магистрале сивом бојом). На линији поред елемента уписати број са слике.",
     leftItems: ["процесор", "AGP слот", "PCI слот"],
     rightItems: ["(бројеви са слике)"],
-    correctAnswer: {},
+    correctPairs: {},
     explanation: "Одговор зависи од конкретне блок шеме у задатку.",
   },
 
@@ -689,7 +692,7 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 55, type: "single", subject: "os", points: 1,
-    question: "Изабери команду која креира дељени фолдер DataShare на C:\\Data, груpi Users даје Full Control и ограничава истовремени приступ на 5 корисника:",
+    question: "Изабери команду која креира дељени фолдер DataShare на C:\\Data, групи Users даје Full Control и ограничава истовремени приступ на 5 корисника:",
     options: [
       "net share DataShare=\"C:\\Data\" /grant:Users,read /users:5",
       "net share Data=\"C:\\DataShare\" /grant:Users,full /users:5",
@@ -761,7 +764,7 @@ export const questions: QuizQuestion[] = [
       "препоручује се због смањења потрошње електричне енергије",
     ],
     correctAnswer: 1,
-    explanation: "SSD дискови немају покретних делова, дефрагментација је непотребна и скраћује животни век износећи додатне write цикусе.",
+    explanation: "SSD дискови немају покретних делова, дефрагментација је непотребна и скраћује животни век износећи додатне write циклусе.",
   },
   {
     id: 63, type: "single", subject: "os", points: 1,
@@ -802,7 +805,7 @@ export const questions: QuizQuestion[] = [
       "проверу документа антивирус програмом",
       "дигитални потпис на електронски документ",
       "компресију документа раровањем",
-      "слање непромењеног документа меилом",
+      "слање непромењеног документа мejлом",
     ],
     correctAnswer: 2,
     explanation: "Дигитални потпис обезбеђује аутентичност пошиљаоца, интегритет поруке и непорецивост.",
@@ -843,11 +846,11 @@ export const questions: QuizQuestion[] = [
       "ако прекорачи 450MB корисник неће моћи на даље да снима нове фајлове",
     ],
     correctAnswer: 0,
-    explanation: "Ниво упозорења квоте при 400MB само записује događaj у систем дневника (Event Log), не блокира записивање.",
+    explanation: "Ниво упозорења квоте при 400MB само записује догађај у систем дневника (Event Log), не блокира записивање.",
   },
   {
     id: 71, type: "single", subject: "os", points: 1,
-    question: "Навести рутину (програм) koji читa дисковне уређаје и тражи исправан главни сектор за подизање система:",
+    question: "Навести рутину (програм) koji чита дисковне уређаје и тражи исправан главни сектор за подизање система:",
     options: [
       "Самотестирање по укључењу (POST)",
       "Bootstrap loader",
@@ -855,7 +858,7 @@ export const questions: QuizQuestion[] = [
       "BIOS",
     ],
     correctAnswer: 1,
-    explanation: "Bootstrap loader је програм koji se pokреће после POST-а и учитава ОС са диска.",
+    explanation: "Bootstrap loader је програм koji се покреће после POST-а и учитава ОС са диска.",
   },
   {
     id: 72, type: "single", subject: "os", points: 1,
@@ -866,14 +869,14 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 73, type: "single", subject: "os", points: 1,
-    question: "Помоћни програм Windows ОС-а koji идентификује садржај који може бити обрисан ради повећања слободног простора назива се:",
+    question: "Помоћни програм Windows ОС-а koji идентификује садржај koji може бити обрисан ради повећања слободног простора назива се:",
     options: ["Check Disk", "Disk Defragmenter", "Disk Manager", "Disk Cleanup"],
     correctAnswer: 3,
     explanation: "Disk Cleanup (cleanmgr.exe) идентификује и брише привремене фајлове, thumbnail cache, итд.",
   },
   {
     id: 74, type: "single", subject: "os", points: 1,
-    question: "Mрежни администратор жели да провери да ли мрежна картица корисника ради исправно. Алат за то је:",
+    question: "Мрежни администратор жели да провери да ли мрежна картица корисника ради исправно. Алат за то је:",
     options: [
       "Device Hardware Utility",
       "Manage Hardware Utility",
@@ -1023,7 +1026,7 @@ export const questions: QuizQuestion[] = [
       "смањићете волумен C",
       "компресоваћете волумен C",
       "конвертоваћете Disk 0 у динамички диск",
-      "креираћете и иницијализовати виртуални хард диск (VHD)",
+      "креираћете и иницијализоваћете виртуални хард диск (VHD)",
     ],
     correctAnswer: 0,
     explanation: "Shrink Volume (смањивање волумена) ослобађа неалоциран простор за нову партицију.",
@@ -1068,7 +1071,7 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 91, type: "single", subject: "os", points: 2,
-    question: "Сумњате на малициозни софтвер koji је додао ставку у сервисе при покретању ОС-а. Алат za провери:",
+    question: "Сумњате на малициозни софтвер koji је додао ставку у сервисе при покретању ОС-а. Алат за проверу:",
     options: ["chkdsk", "msconfig", "dxdiag", "regsvr32"],
     correctAnswer: 1,
     explanation: "msconfig (System Configuration) приказује програме и сервисе при покретању и омогућава управљање.",
@@ -1083,7 +1086,7 @@ export const questions: QuizQuestion[] = [
       "tar -xzfv /pod2022.tar.gz -C /podaci",
     ],
     correctAnswer: 1,
-    explanation: "-C ../podaci усмерава распакивање у суседни фолдер podaci (../podaci у односу на ~/backup).",
+    explanation: "-C ../podaci усмерава распакивање у суседни фолдер podaci.",
   },
   {
     id: 93, type: "single", subject: "os", points: 2,
@@ -1107,7 +1110,7 @@ export const questions: QuizQuestion[] = [
       "променити адресу DNS-а на PC1",
     ],
     correctAnswer: 2,
-    explanation: "ping DG-а пролази, ali ping DNS-а пропада → проблем је са DNS адресом (недоступан DNS сервер).",
+    explanation: "ping DG-а пролази, али ping DNS-а пропада → проблем је са DNS адресом.",
   },
   {
     id: 95, type: "single", subject: "os", points: 2,
@@ -1134,7 +1137,7 @@ export const questions: QuizQuestion[] = [
     question: "Петар је заменио Драгана и треба му исти приступ ресурсима. Ова транзиција се најлакше реализује тако штo ћете:",
     options: [
       "Копирати Драганов кориснички налог и копираном дати ime Петар",
-      "У реgistру OS-а заменити Драганово ime Петровим",
+      "У регистру OS-а заменити Драганово ime Петровим",
       "Преузети власништво над Драгановим ресурсима и Петру дати Full Control",
       "Преименовати Драганов кориснички налог на Петра",
     ],
@@ -1151,7 +1154,7 @@ export const questions: QuizQuestion[] = [
       "Треба обрисати дозволе групе ПРОДАЈА и поново их доделити",
     ],
     correctAnswer: 2,
-    explanation: "Deny дозвола има предност над Allow; ако Милан случајно буде у групи sa Deny, то поништава Full Control.",
+    explanation: "Deny дозвола има предност над Allow; ако Милан буде у групи са Deny, то поништава Full Control.",
   },
   {
     id: 99, type: "single", subject: "os", points: 2,
@@ -1187,7 +1190,7 @@ export const questions: QuizQuestion[] = [
       "искључити Content filtering",
     ],
     correctAnswer: 0,
-    explanation: "MAC filtering дозвољава приступ само уређајима чије су MAC адресе унесене у белу листу, без потребе за лозинком.",
+    explanation: "MAC filtering дозвољава приступ само уређајима чије су MAC адресе унесене у белу листу.",
   },
   {
     id: 102, type: "single", subject: "os", points: 2,
@@ -1198,7 +1201,7 @@ export const questions: QuizQuestion[] = [
       "Искључити штампач; драjвер може да се инсталира и кад је искључен",
     ],
     correctAnswer: 1,
-    explanation: "За почетну конфигурацију бежичне мреже штампача потребна је жичана веза да би се поставиле WiFi поставке.",
+    explanation: "За почетну конфигурацију бежичне мреже штампача потребна је жичана веза.",
   },
   {
     id: 103, type: "single", subject: "os", points: 2,
@@ -1290,7 +1293,7 @@ export const questions: QuizQuestion[] = [
       "Group1 = Deny Modify; User1 = Write",
     ],
     correctAnswer: 0,
-    explanation: "Write дозвола дозвољава креирање; Modify дозвољава и брисање. User1 добија Modify (може бришу); Group1 Write (може креира, не може бришу туђе).",
+    explanation: "Write дозвола дозвољава креирање; Modify дозвољава и брисање. User1 добија Modify; Group1 Write.",
   },
 
   // Multi-choice (111–125)
@@ -1306,14 +1309,14 @@ export const questions: QuizQuestion[] = [
       "не подржава 64-битне управљачке програме",
       "подржава дискове веће од 2,2 ТБ",
     ],
-    correctAnswer: [0, 1, 4, 6],
+    correctAnswers: [0, 1, 4, 6],
     explanation: "UEFI: брже подизање, GPT до 128 партиција, GUI са мишем, подршка дискова > 2,2 TB.",
   },
   {
     id: 112, type: "multi", subject: "os", points: 2,
     question: "Као антивирус програми могу да се користе:",
     options: ["KASPER", "NORTON COMMANDER", "AVAST", "AGV", "NOD32"],
-    correctAnswer: [0, 2, 3, 4],
+    correctAnswers: [0, 2, 3, 4],
     explanation: "Kasper(sky), Avast, AVG и NOD32 су антивирусни програми. Norton Commander је file manager.",
   },
   {
@@ -1326,8 +1329,8 @@ export const questions: QuizQuestion[] = [
       "на радној станици не може да се конфигурише резервно копирање, може само на серверу",
       "на радној станици не може да се конфигурише резервно копирање комплетног рачунара",
     ],
-    correctAnswer: [0, 2],
-    explanation: "Windows Backup: може на локални или мрежни диск; може да се закаже месечно. Све остале тврдње су нетачне.",
+    correctAnswers: [0, 2],
+    explanation: "Windows Backup: може на локални или мрежни диск; може да се закаже месечно.",
   },
   {
     id: 114, type: "multi", subject: "os", points: 2,
@@ -1338,7 +1341,7 @@ export const questions: QuizQuestion[] = [
       "партицију на системском диску рачунара на ком се ради бекап",
       "партицију на диску на ком су и подаци који се бекапују",
     ],
-    correctAnswer: [0, 1],
+    correctAnswers: [0, 1],
     explanation: "Бекап медијум треба бити одвојен уређај – локални или мрежни диск намењен само бекапу.",
   },
   {
@@ -1350,8 +1353,8 @@ export const questions: QuizQuestion[] = [
       "може им се приступити из Network and Sharing Center",
       "може им се приступити када се у Run унесе UNC путања",
     ],
-    correctAnswer: [1, 3],
-    explanation: "$ фолдери нису видљиви у Explorer-у при прегледу мреже, али јесу у Computer Management (Shares) и доступни UNC путањом (нпр. \\\\PC\\C$).",
+    correctAnswers: [1, 3],
+    explanation: "$ фолдери нису видљиви у Explorer-у, али јесу у Computer Management (Shares) и доступни UNC путањом.",
   },
   {
     id: 116, type: "multi", subject: "os", points: 2,
@@ -1364,12 +1367,12 @@ export const questions: QuizQuestion[] = [
       "обрисаћете привремене датотеке виртуелне машине",
       "инсталираћете додатне физичке чврсте дискове",
     ],
-    correctAnswer: [0, 3],
+    correctAnswers: [0, 3],
     explanation: "Додавање RAM-а хосту и смањење RAM-а VM-у даје хосту више ресурса.",
   },
   {
     id: 117, type: "multi", subject: "os", points: 3,
-    question: "Које адресе спадају у конвенционalno приватни опсег IP адреса?",
+    question: "Које адресе спадају у конвенционалнo приватни опсег IP адреса?",
     options: [
       "172.32.200.200",
       "10.10.10.1",
@@ -1378,8 +1381,8 @@ export const questions: QuizQuestion[] = [
       "192.168.255.254",
       "8.8.8.8",
     ],
-    correctAnswer: [1, 3, 4],
-    explanation: "Приватни опсези: 10.0.0.0/8, 172.16.0.0/12 (172.16–172.31), 192.168.0.0/16. 172.32 и 192.186 нису приватне.",
+    correctAnswers: [1, 3, 4],
+    explanation: "Приватни опсези: 10.0.0.0/8, 172.16.0.0/12 (172.16–172.31), 192.168.0.0/16.",
   },
   {
     id: 118, type: "multi", subject: "os", points: 3,
@@ -1391,12 +1394,12 @@ export const questions: QuizQuestion[] = [
       "kako би се ослободила радна меморија",
       "da mu ne bi isteklo додељено процесорско времe",
     ],
-    correctAnswer: [0, 2, 3],
+    correctAnswers: [0, 2, 3],
     explanation: "Процес иде у СУСПЕНДОВАН: прекомерно спремних процеса, ослобађање RAM-а или корисничка команда.",
   },
   {
     id: 119, type: "multi", subject: "os", points: 3,
-    question: "Означи объекте koji представљају Built-In групе (не корисничке налоге):",
+    question: "Означи објекте koji представљају Built-In групе (не корисничке налоге):",
     options: [
       "Administrator",
       "Guest",
@@ -1405,7 +1408,7 @@ export const questions: QuizQuestion[] = [
       "DefaultAccount",
       "Users",
     ],
-    correctAnswer: [2, 3, 5],
+    correctAnswers: [2, 3, 5],
     explanation: "Групе: Administrators, Remote Desktop Users, Users. Налози: Administrator, Guest, DefaultAccount.",
   },
   {
@@ -1415,12 +1418,12 @@ export const questions: QuizQuestion[] = [
       "Језгро не користи рутине већ их предаје апликацијама",
       "У слојевитом моделу језгро је најближе хардверу",
       "Dio језгра су апликациони програми koji се извршавају",
-      "Језгро одређује kada и na koje доба ће процес добити процесор",
+      "Језгро одређује kada и на које доба ће процес добити процесор",
       "Dio језгра су рутине за интерпроцесну комуникацију",
       "У слојевитом моделу језгро је најближе апликацијама",
     ],
-    correctAnswer: [1, 3, 4],
-    explanation: "Tачно: језгро је најнижи слој (ближе HW), управља планирањем процесора и Inter-Process Communication (IPC).",
+    correctAnswers: [1, 3, 4],
+    explanation: "Тачно: језгро је најближе HW, управља планирањем процесора и Inter-Process Communication (IPC).",
   },
   {
     id: 121, type: "multi", subject: "os", points: 3,
@@ -1434,7 +1437,7 @@ export const questions: QuizQuestion[] = [
       "кориснику Profesor није дозвољено уписивање на диск Е ако прекорачи лимит",
       "кориснику Profesor је дозвољено уписивање на диск Е и када прекорачи лимит",
     ],
-    correctAnswer: [2, 5],
+    correctAnswers: [2, 5],
     explanation: "Слика приказује квоту 100 KB са упозорењем (мека квота) – корисник може и даље уписивати.",
   },
   {
@@ -1448,7 +1451,7 @@ export const questions: QuizQuestion[] = [
       "DHCP сервер је адаптеру доделио IPv6 адресу",
       "На мрежном адаптеру оспособљен је TCP/IPv6 протокол",
     ],
-    correctAnswer: [2, 4],
+    correctAnswers: [2, 4],
     explanation: "Из ipconfig: DHCP и DG адресе се разликују; IPv6 је оспособљен (приказана link-local адреса).",
   },
   {
@@ -1460,8 +1463,8 @@ export const questions: QuizQuestion[] = [
       "Sharing и NTFS дозволе нису добро подешене",
       "Мрежна картица VM-ова није подешена да шаље податке у физичку мрежу",
     ],
-    correctAnswer: [1, 3],
-    explanation: "Дељење ресурса захтева да VM-ови буду у истој мрежи и да мрежни адаптер шаље пакете у физичку мрежу (нпр. Bridged mode).",
+    correctAnswers: [1, 3],
+    explanation: "Дељење ресурса захтева да VM-ови буду у истој мрежи и да мрежни адаптер шаље пакете у физичку мрежу.",
   },
   {
     id: 124, type: "multi", subject: "os", points: 3,
@@ -1473,7 +1476,7 @@ export const questions: QuizQuestion[] = [
       "Рачунар има два хард диска",
       "Рачунар користи SSD диск капацитета 256GB",
     ],
-    correctAnswer: [0, 3],
+    correctAnswers: [0, 3],
     explanation: "Слика приказује UEFI boot и SSD 256GB.",
   },
   {
@@ -1487,8 +1490,8 @@ export const questions: QuizQuestion[] = [
       "У својствима за WiFi1, изабрати: Look for other wireless networks while connected",
       "У својствима за WiFi2, изабрати: Look for other wireless networks while connected",
     ],
-    correctAnswer: [1, 3],
-    explanation: "WiFi2: Connect automatically (користи кад год је доступан); WiFi1: Connect automatically (fallback). Виши приоритет добија WiFi2.",
+    correctAnswers: [1, 3],
+    explanation: "WiFi2: Connect automatically; WiFi1: Connect automatically (fallback). Виши приоритет добија WiFi2.",
   },
 
   // Fill-in (126–140)
@@ -1496,7 +1499,7 @@ export const questions: QuizQuestion[] = [
     id: 126, type: "fill", subject: "os", points: 1,
     question: "_____________ инсталација захтева коришћење датотеке одговора (answer file).",
     correctAnswer: "Unattended",
-    explanation: "Unattended (тиха) инсталација аутоматизује процес постављањем Windows-а преко датотеке одговора (answer file / unattend.xml).",
+    explanation: "Unattended (тиха) инсталација аутоматизује процес постављањем Windows-а преко датотеке одговора.",
   },
   {
     id: 127, type: "fill", subject: "os", points: 1,
@@ -1515,13 +1518,13 @@ export const questions: QuizQuestion[] = [
     imageQuestion: true,
     question: "На слици је приказан дeo екрана програма ________________________.",
     correctAnswer: "Reliability Monitor",
-    explanation: "Слика приказује Reliability Monitor (Монитор поузданости) – приказује историју стабилности система.",
+    explanation: "Слика приказује Reliability Monitor – приказује историју стабилности система.",
   },
   {
     id: 130, type: "fill", subject: "os", points: 1,
     question: "_____________ је програм у статусу извршавања, заједно са свим ресурсима рачунарског система koji су неопходни за његово извршавање.",
     correctAnswer: "Процес",
-    explanation: "Процес (Process) је апстракција програма у извршавању са потребним ресурсима (меморија, I/O, итд.).",
+    explanation: "Процес (Process) је апстракција програма у извршавању са потребним ресурсима.",
   },
   {
     id: 131, type: "fill", subject: "os", points: 1,
@@ -1544,9 +1547,9 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 134, type: "fill", subject: "os", points: 2,
-    question: "Пет дискова, сваки капацитета 500 GB, везани су у RAID-5. Укупан користан простор је _____________. Простор za parnost је величине ____________.",
+    question: "Пет дискова, сваки капацитета 500 GB, везани су у RAID-5. Укупан користан простор је _____________. Простор за парност је величине ____________.",
     items: ["укупан користан простор", "простор за паритет"],
-    correctAnswer: ["2 TB (2000 GB)", "500 GB"],
+    correctAnswer: ["2 TB", "500 GB"],
     explanation: "RAID-5 са N дискова користи N-1 за податке: 4 × 500 GB = 2 TB. Паритет = 1 × 500 GB.",
   },
   {
@@ -1554,7 +1557,7 @@ export const questions: QuizQuestion[] = [
     question: "Код виртуелизације, ОС koji комуницира са хардвером назива се _________________, а ОС на виртуелној машини назива се _________________.",
     items: ["ОС koji комуницира са хардвером", "ОС на виртуелној машини"],
     correctAnswer: ["хост", "гост"],
-    explanation: "Host OS (домаћин) покреће хипервизор; Guest OS (гост) се извршава унутар виртуелне машине.",
+    explanation: "Host OS покреће хипервизор; Guest OS се извршава унутар виртуелне машине.",
   },
   {
     id: 136, type: "fill", subject: "os", points: 2,
@@ -1579,7 +1582,7 @@ export const questions: QuizQuestion[] = [
     imageQuestion: true,
     question: "На рачунар прикључени су дискови и креирани волумени [слика Disk Management]. Капацитет волумена P видљив кориснику је: ________ GB.",
     correctAnswer: "6",
-    explanation: "На слици Disk Management волумен P (RAID-5 или span) приказује 6 GB корисног простора.",
+    explanation: "На слици Disk Management волумен P приказује 6 GB корисног простора.",
   },
   {
     id: 140, type: "fill", subject: "os", points: 3,
@@ -1602,7 +1605,7 @@ export const questions: QuizQuestion[] = [
       "Изабрати одговарајући бекап са списка",
       "Изабрати Repair приликом инсталације",
     ],
-    correctAnswer: [2, 1, 3, 0, 5, 4],
+    correctOrder: [2, 1, 3, 0, 5, 4],
     explanation: "Редослед: Откачити неисправан HDD → Повезати нови → Убацити инст.диск → Покренути инсталацију → Изабрати Repair → Изабрати бекап.",
   },
   {
@@ -1615,12 +1618,12 @@ export const questions: QuizQuestion[] = [
       "4. видети путању и одговор сваког уређаја (кашњење)",
     ],
     rightItems: ["tracert", "ping", "pathping", "ipconfig /all"],
-    correctAnswer: {
+    correctPairs: {
       "tracert": 2,
       "ping": 1,
       "pathping": 4,
       "ipconfig /all": 3,
-    } as Record<string, number>,
+    },
     explanation: "ping шаље пакете; tracert прати путању; pathping комбинује; ipconfig /all приказује конфигурацију.",
   },
   {
@@ -1629,13 +1632,13 @@ export const questions: QuizQuestion[] = [
     question: "Слика приказује аудио портове на матичној плочи. Испред боје написати број порта (X ако боја није на слици).",
     leftItems: ["Аудио портови са слике"],
     rightItems: ["зелена", "розе", "плава", "сива"],
-    correctAnswer: {
+    correctPairs: {
       "зелена": 1,
       "розе": 2,
       "плава": 3,
       "сива": 0,
-    } as Record<string, number>,
-    explanation: "Стандардне боје: зелена = Line-Out; розе = Mic-In; плава = Line-In; сива = може не постојати (X).",
+    },
+    explanation: "Стандардне боје: зелена = Line-Out; розе = Mic-In; плава = Line-In.",
   },
   {
     id: 144, type: "match", subject: "os", points: 2,
@@ -1652,12 +1655,12 @@ export const questions: QuizQuestion[] = [
       "Одређивање простора и уношење ставке у директоријум",
       "Системским позивом спецификују се подаци koji ће бити уписани",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Ослобађа се простор додељен датотеци": 2,
       "Системским позивом спецификује се место у меморији где ће се сместити очитани блок": 3,
       "Одређивање простора и уношење ставке у директоријум": 4,
       "Системским позивом спецификују се подаци koji ће бити уписани": 1,
-    } as Record<string, number>,
+    },
     explanation: "Брисање ослобађа простор; Читање спецификује меморијску локацију; Креирање резервише простор; Упис уписује податке.",
   },
   {
@@ -1673,23 +1676,23 @@ export const questions: QuizQuestion[] = [
       "Размножавају се само преносом са рачунара на рачунар",
       "Представљају се као користан софтвер па их корисник сам инсталира",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Модификују разне фајлове и деградирају перформансе рачунара": 2,
       "Размножавају се само преносом са рачунара на рачунар": 3,
       "Представљају се као користан софтвер па их корисник сам инсталира": 1,
-    } as Record<string, number>,
-    explanation: "Вируси = деградирају перформансе; Тројанци = маскирају се као користан softver; Црви = самостално се шире мрежом.",
+    },
+    explanation: "Вируси = деградирају перформансе; Тројанци = маскирају се; Црви = самостално се шире мрежом.",
   },
   {
     id: 146, type: "order", subject: "os", points: 3,
-    question: "Поређати хронолошки (1–4) gebeurtenaje у HTTP комуникацији (клијент покушава отворити http://www.yahoo.com/index.html).",
+    question: "Поређати хронолошки (1–4) догађаје у HTTP комуникацији (клијент покушава отворити http://www.yahoo.com/index.html).",
     items: [
       "Претраживач шаље HTTP захтев на сервер за index.html",
       "Прегледач приказује форматирану страницу HTML кода",
       "Претраживач захтева од DNS-а претварање домена у IP адресу",
       "Сервер шаље HTML код назад прегледачу",
     ],
-    correctAnswer: [2, 0, 3, 1],
+    correctOrder: [2, 0, 3, 1],
     explanation: "DNS lookup → HTTP REQUEST → Server шаље HTML → Browser приказује страницу.",
   },
   {
@@ -1698,18 +1701,18 @@ export const questions: QuizQuestion[] = [
     question: "На слици је конфигурациони прозор за мрежне параметре. Поља за унос статичких адреса означена су бројевима. Уписати број места за сваки параметар.",
     leftItems: ["(поља на слици)"],
     rightItems: ["IP адреса", "DNS2", "SM", "DG", "DNS1"],
-    correctAnswer: {
+    correctPairs: {
       "IP адреса": 1,
       "SM": 2,
       "DG": 3,
       "DNS1": 4,
       "DNS2": 5,
-    } as Record<string, number>,
+    },
     explanation: "Стандардни редослед у Windows мрежним подешавањима: IP, SM, DG, DNS1, DNS2.",
   },
   {
     id: 148, type: "match", subject: "os", points: 3,
-    question: "На левој страни su imена напада, а на десној описи. Испред описа уписати број напада.",
+    question: "На левој страни su имена напада, а на десној описи. Испред описа уписати број напада.",
     leftItems: [
       "1. Spam",
       "2. Ransomware",
@@ -1723,16 +1726,16 @@ export const questions: QuizQuestion[] = [
       "Загушење сервера захтевима за приступ",
       "Уцењивачки напад са шифровањем садржаја и захтевом за откупнину",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Малициозни код убачен преко рањивих делова сајта или URL": 3,
       "Загушење сервера захтевима за приступ": 6,
       "Уцењивачки напад са шифровањем садржаја и захтевом за откупнину": 2,
-    } as Record<string, number>,
-    explanation: "Code injection напад убацује код; DoS/DDoS загушује сервер; Ransomware шифрује и тражи откупнину.",
+    },
+    explanation: "Code injection убацује код; DoS/DDoS загушује сервер; Ransomware шифрује и тражи откупнину.",
   },
   {
     id: 149, type: "order", subject: "os", points: 3,
-    question: "Рачунару (500 GB HDD) додата су два диска по 1 TB. Навести редослед акција за fault-tolerant конфигурацију (X за акције koje не треба предузети).",
+    question: "Рачунару (500 GB HDD) додата су два диска по 1 TB. Навести редослед акција за fault-tolerant конфигурацију.",
     items: [
       "Иницијализовати дискове",
       "Променити статус Disk 1 у Offline",
@@ -1741,8 +1744,9 @@ export const questions: QuizQuestion[] = [
       "Креирати Mirrored волумен",
       "Конвертовати дискове у динамичке",
     ],
-    correctAnswer: [0, 5, 4],
-    explanation: "Редослед: Иницијализовати → Конвертовати у динамичке → Kreirati Mirrored волумен. Offline и Striped нису потребни.",
+    correctOrder: [0, 5, 4],
+    hasSkips: true,
+    explanation: "Редослед: Иницијализовати → Конвертовати у динамичке → Kreirati Mirrored волумен.",
   },
   {
     id: 150, type: "match", subject: "os", points: 4,
@@ -1759,12 +1763,12 @@ export const questions: QuizQuestion[] = [
       "садржи информације потребне за подизање ОС-а",
       "одређују конкретан садржај датотеке (блокове у kojima је смештен садржај)",
     ],
-    correctAnswer: {
+    correctPairs: {
       "садржи информације о систему датотека": 2,
       "садржи атрибуте датотека и указиваче на алокацију датотеке": 4,
       "садржи информације потребне за подизање ОС-а": 1,
       "одређују конкретан садржај датотеке (блокове у kojima је смештен садржај)": 3,
-    } as Record<string, number>,
+    },
     explanation: "PCB = info о FS; FCB = атрибути датотека; BCB = boot info; структуре алокације = садржај датотека.",
   },
   {
@@ -1783,26 +1787,25 @@ export const questions: QuizQuestion[] = [
       "Омогућава преглед и управљање инсталираним хардверским компонентама и драjверима",
       "Приказује детаље о хардверским ресурсима рачунара, компонентама и софтверском окружењу",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Омогућава оптимизацију диска": 1,
       "Омогућава преглед, извоз, увоз и брисање дигиталних сертификата за тренутног корисника": 5,
       "Омогућава преглед и управљање инсталираним хардверским компонентама и драjверима": 2,
       "Приказује детаље о хардверским ресурсима рачунара, компонентама и софтверском окружењу": 3,
-    } as Record<string, number>,
-    explanation: "dfrgui = дефрагментација; lusrmgr може управљати локалним корисницима и групама (certmgr.msc за сертификате); devmgmt = Device Manager; msinfo32 = System Info.",
+    },
+    explanation: "dfrgui = дефрагментација; lusrmgr = локални корисници; devmgmt = Device Manager; msinfo32 = System Info.",
   },
 
   // ─────────────────────────────────────────────────────────────
   //  ОДРЖАВАЊЕ РАЧУНАРСКИХ СИСТЕМА  (152 – 201)
   // ─────────────────────────────────────────────────────────────
 
-  // Single-choice (152–180)
   {
     id: 152, type: "single", subject: "maintenance", points: 1,
     question: "S.M.A.R.T. технологија нам помаже да надгледамо:",
     options: ["Оперативна меморија", "Температура графичке карте", "Хард диск"],
     correctAnswer: 2,
-    explanation: "S.M.A.R.T. (Self-Monitoring, Analysis and Reporting Technology) мониторише стање HDD и SSD уређаја.",
+    explanation: "S.M.A.R.T. мониторише стање HDD и SSD уређаја.",
   },
   {
     id: 153, type: "single", subject: "maintenance", points: 1,
@@ -1886,7 +1889,7 @@ export const questions: QuizQuestion[] = [
     question: "Да бисте проверили да је рек орман уземљен користићете:",
     options: ["тестер каблова", "осцилоскоп", "мултиметар", "волтметар"],
     correctAnswer: 2,
-    explanation: "Мултиметар мери отпор, напон и струju; у режиму мерења отпора verifikuje уземљење.",
+    explanation: "Мултиметар у режиму мерења отпора верификује уземљење.",
   },
   {
     id: 162, type: "single", subject: "maintenance", points: 1,
@@ -1912,7 +1915,7 @@ export const questions: QuizQuestion[] = [
       "ресетујете администраторски налог у AD Users and Computers",
     ],
     correctAnswer: 1,
-    explanation: "dcpromo /unattend или кроз Server Manager Remove Role (AD DS) демотовира контролер домена.",
+    explanation: "dcpromo или Server Manager Remove Role (AD DS) демотовира контролер домена.",
   },
   {
     id: 165, type: "single", subject: "maintenance", points: 1,
@@ -1924,7 +1927,7 @@ export const questions: QuizQuestion[] = [
       "измените својства налога да лозинка никада не истиче",
     ],
     correctAnswer: 0,
-    explanation: "Налог je истекао (account expiration date); треба уклонити датум истека у атрибуту налога.",
+    explanation: "Налог је истекао (account expiration date); треба уклонити датум истека у атрибуту налога.",
   },
   {
     id: 166, type: "single", subject: "maintenance", points: 1,
@@ -1943,12 +1946,12 @@ export const questions: QuizQuestion[] = [
     question: "Радник техничке подршке схвата решење пре него što корисник заврши. Поступиће правилно ако:",
     options: [
       "наставиће да слуша корисника па га упутити на веб сајт",
-      "прекинуће корисника и одмах objasнити решење",
+      "прекинуће корисника и одмах објасниће решење",
       "замолиће корисника да неколико пута понови симптоме",
-      "саслушаће излагање до краја па ће objasнити решење",
+      "саслушаће излагање до краја па ће објасниће решење",
     ],
     correctAnswer: 3,
-    explanation: "Добра пракса је саслушати корисника до краја, тек потом пружити решење – потпуне информације могу открити додатне детаље.",
+    explanation: "Добра пракса је саслушати корисника до краја, тек потом пружити решење.",
   },
   {
     id: 168, type: "single", subject: "maintenance", points: 1,
@@ -2027,7 +2030,7 @@ export const questions: QuizQuestion[] = [
       "подесити да ажурирање може да уради bilo koji кориснички налог",
     ],
     correctAnswer: 0,
-    explanation: "GPO (Local Group Policy) омогућава финозрнату контролу права – може се дозволити ручно ажурирање без давања администраторских привилегија.",
+    explanation: "GPO омогућава финозрнату контролу права – може се дозволити ручно ажурирање без давања администраторских привилегија.",
   },
   {
     id: 175, type: "single", subject: "maintenance", points: 2,
@@ -2083,12 +2086,12 @@ export const questions: QuizQuestion[] = [
       "инсталација бежичне мрежне картице и набавка бежичног рутера",
     ],
     correctAnswer: 2,
-    explanation: "Додавање PCIe мрежне картице је нajбрже и нajjeftinije решење – не мења остале компоненте.",
+    explanation: "Додавање PCIe мрежне картице је најбрже и најjефтиније решење.",
   },
   {
     id: 180, type: "single", subject: "maintenance", points: 3,
     imageQuestion: true,
-    question: "Потребно је убацити све кројаче у групу Krojaci. Атрибут naloga кројача je description=krojac [слика AD хијерархије]. Акција:",
+    question: "Потребно је убацити све кројаче у групу Krojaci. Атрибут налога кројача je description=krojac [слика AD хијерархије]. Акција:",
     options: [
       "Селектовати домен > Find > description: krojenje > убацити у Krojaci",
       "Селектовати ОЈ Aleksinac > Find > оставити поља празна > убацити све у Krojaci",
@@ -2110,8 +2113,8 @@ export const questions: QuizQuestion[] = [
       "Computer Management конзолу",
       "Task Manager",
     ],
-    correctAnswer: [0, 1],
-    explanation: "BIOS приказује температуре хардвера; SpeedFan је апликација за мониторинг температуре (fan speed, temperatures).",
+    correctAnswers: [0, 1],
+    explanation: "BIOS приказује температуре хардвера; SpeedFan је апликација за мониторинг температуре.",
   },
   {
     id: 182, type: "multi", subject: "maintenance", points: 2,
@@ -2124,7 +2127,7 @@ export const questions: QuizQuestion[] = [
       "заштитне наочаре",
       "гумене рукавице",
     ],
-    correctAnswer: [0, 4],
+    correctAnswers: [0, 4],
     explanation: "Маска штити дисајне путеве, а заштитне наочаре штите очи од честица прашине.",
   },
   {
@@ -2138,8 +2141,8 @@ export const questions: QuizQuestion[] = [
       "овлаживач ваздуха",
       "резервоаре са кисеоником",
     ],
-    correctAnswer: [1, 4],
-    explanation: "Компресовани ваздух чисти прашину из уређаја; овлаживач ваздуха смањује статički electricitet у сувим условима.",
+    correctAnswers: [1, 4],
+    explanation: "Компресовани ваздух чисти прашину из уређаја; овлаживач ваздуха смањује статички електрицитет у сувим условима.",
   },
   {
     id: 184, type: "multi", subject: "maintenance", points: 2,
@@ -2151,7 +2154,7 @@ export const questions: QuizQuestion[] = [
       "Не допушта да корисник буде члан више група из различитих домена",
       "Дозвољава да локални корисници рачунара користе ресурсе домена",
     ],
-    correctAnswer: [0, 1],
+    correctAnswers: [0, 1],
     explanation: "AD омогућава централизовану аутентификацију и приступ свим рачунарима у домену са jednim налогом.",
   },
   {
@@ -2165,7 +2168,7 @@ export const questions: QuizQuestion[] = [
       "Деформације пинова на подножју процесора",
       "Запрљаност кућишта",
     ],
-    correctAnswer: [1, 2, 4],
+    correctAnswers: [1, 2, 4],
     explanation: "Видљиве неисправности: неправилно постављене компоненте, бурени/набречени кондензатори, деформисани пинови процесора.",
   },
   {
@@ -2179,7 +2182,7 @@ export const questions: QuizQuestion[] = [
       "regedit.exe",
       "msconfig.exe",
     ],
-    correctAnswer: [0, 2, 3],
+    correctAnswers: [0, 2, 3],
     explanation: "sfc /scannow проверава системске фајлове; driverquery /si листа потписане драjвере; sigverif.exe верификује потписе.",
   },
   {
@@ -2193,32 +2196,32 @@ export const questions: QuizQuestion[] = [
       "Schema Admins",
       "Protected Users",
     ],
-    correctAnswer: [0, 1, 2, 4],
-    explanation: "У новој шуми Administrator (**Domain Admin**) је аутоматски члан: Administrators, Backup Operators, Server Operators и Schema Admins.",
+    correctAnswers: [0, 1, 2, 4],
+    explanation: "У новој шуми Administrator је аутоматски члан: Administrators, Backup Operators, Server Operators и Schema Admins.",
   },
   {
     id: 188, type: "multi", subject: "maintenance", points: 3,
     question: "Рачунар избацује поруку 'BOOTMGR is missing' одмах после POST-а. Акције за отклањање проблема:",
     options: [
       "опоравићете BOOTMGR коришћењем Windows Recovery Environment",
-      "покренућете антивирусни softvер",
+      "покренућете антивирусни softver",
       "покренућете chkdsk /F /R из конзоле за опоравак",
       "покренућете bootrec /fixboot",
       "искористити Last Known Good Configuration",
     ],
-    correctAnswer: [0, 2, 3],
+    correctAnswers: [0, 2, 3],
     explanation: "WRE омогућава аутоматску поправку; chkdsk /F /R поправља грешке FS-а; bootrec /fixboot записује нови boot сектор.",
   },
   {
     id: 189, type: "multi", subject: "maintenance", points: 3,
-    question: "Шеф рачуноводства пријављује спорост при покретању апликације за обраду плата. Perormance Monitor: CPU 100%, знатан број грешака страничења. Ван апликације: CPU 30%, и даље грешке страничења. Решење:",
+    question: "Шеф рачуноводства пријављује спорост при покретању апликације за обраду плата. Performance Monitor: CPU 100%, знатан број грешака страничења. Ван апликације: CPU 30%, и даље грешке страничења. Решење:",
     options: [
       "надоградити процесор",
       "додати RAM меморију",
       "конфигурисати страничну датотеку на D и E дисковима",
       "повећати страничну датотеку на 3 GB",
     ],
-    correctAnswer: [1, 2],
+    correctAnswers: [1, 2],
     explanation: "Грешке страничења указују на недостатак RAM-а; решење: додати RAM и преместити pagefile на одвојен диск.",
   },
   {
@@ -2232,7 +2235,7 @@ export const questions: QuizQuestion[] = [
       "Повезати нови диск на другom слоту",
       "Креирати партиције без иницијализације",
     ],
-    correctAnswer: [1, 2],
+    correctAnswers: [1, 2],
     explanation: "Нови диск мора бити прво иницијализован (MBR/GPT), па затим партиционисан и форматиран.",
   },
   {
@@ -2245,14 +2248,14 @@ export const questions: QuizQuestion[] = [
       "Конфигурисати GPO: Audit Policy / Audit object access",
       "Конфигурисати GPO: Audit Policy / Audit system events",
     ],
-    correctAnswer: [0, 3],
-    explanation: "Auditing settings на фолдеру дефинише šta се прати; GPO Audit Object Access омогућава снимање ових událosa у Event Log.",
+    correctAnswers: [0, 3],
+    explanation: "Auditing settings на фолдеру дефинише šta се прати; GPO Audit Object Access омогућава снимање догађаја у Event Log.",
   },
 
   // Fill-in (192–195)
   {
     id: 192, type: "fill", subject: "maintenance", points: 1,
-    question: "Да би се креирао объекат корисник у Active Directory-ју користи се команда ________________ .",
+    question: "Да би се креирао објекат корисник у Active Directory-ју користи се команда ________________ .",
     correctAnswer: "dsadd user",
     explanation: "dsadd user <DN> је командна линија за креирање корисника у Active Directory-ју.",
   },
@@ -2264,7 +2267,7 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 194, type: "fill", subject: "maintenance", points: 1,
-    question: "Инсталирали сте систем за прављење и враћање резервних копија. Врста резервне копије kojoм ћете je прва покренути је _______________________.",
+    question: "Инсталирали сте систем за прављење и враћање резервних копија. Врста резервне копије kojom ћете je прва покренути је _______________________.",
     correctAnswer: "Full backup",
     explanation: "Full backup (потпуна резервна копија) мора бити прва јер инкрементални и диференцијални зависе od ње.",
   },
@@ -2272,7 +2275,7 @@ export const questions: QuizQuestion[] = [
     id: 195, type: "fill", subject: "maintenance", points: 2,
     question: "Планиран је overclock процесора. Техника kojom се процесор покреће на максимум способности у одређеном периоду (benchmark) назива се _______________ тест.",
     correctAnswer: "stress",
-    explanation: "Stress тест (torture test) максимalno оптерећuje процесор и открива нестабилност или прегревање при overclocking-у.",
+    explanation: "Stress тест максималнo оптерећuje процесор и открива нестабилност или прегревање при overclocking-у.",
   },
 
   // Match / Order (196–201)
@@ -2289,15 +2292,15 @@ export const questions: QuizQuestion[] = [
       "временска функција, условна вероватноћа да ће систем радити у интервалу [t1,t2]",
       "вероватноћа да 'покварени' систем може бити доведен у оперативно стање унутар t",
       "вероватноћа да систем ради коректно и да је на располагању у тренутку t",
-      "додавање информација у циљу дetekcije, маскирања или толеранције квара",
+      "додавање информација у циљу детекције, маскирања или толеранције квара",
     ],
-    correctAnswer: {
+    correctPairs: {
       "временска функција, условна вероватноћа да ће систем радити у интервалу [t1,t2]": 2,
       "вероватноћа да 'покварени' систем може бити доведен у оперативно стање унутар t": 1,
       "вероватноћа да систем ради коректно и да је на располагању у тренутку t": 4,
-      "додавање информација у циљу дetekcije, маскирања или толеранције квара": 3,
-    } as Record<string, number>,
-    explanation: "Reliability = вероватноћа исправног рада; Serviceability = могућност опоравка; Availability = расположивост; Redundancy = додатне информације за откривање/маскирање грешака.",
+      "додавање информација у циљу детекције, маскирања или толеранције квара": 3,
+    },
+    explanation: "Reliability = вероватноћа исправног рада; Serviceability = могућност опоравка; Availability = расположивост; Redundancy = додатне информације.",
   },
   {
     id: 197, type: "match", subject: "maintenance", points: 2,
@@ -2311,15 +2314,15 @@ export const questions: QuizQuestion[] = [
     rightItems: [
       "омогућава пријаву на домен",
       "омогућава колективно управљање objektima",
-      "objectat без безбедносних дозвола",
+      "objekat без безбедносних дозвола",
       "прикупљање објеката са заједничким захтевима за администрирање",
     ],
-    correctAnswer: {
+    correctPairs: {
       "омогућава пријаву на домен": 2,
       "омогућава колективно управљање objektima": 1,
-      "objectat без безбедносних дозвола": 3,
+      "objekat без безбедносних дозвола": 3,
       "прикупљање објеката са заједничким захтевима за администрирање": 4,
-    } as Record<string, number>,
+    },
     explanation: "Корисник = пријава; Група = колективно управљање; Контакт = без дозвола; OU = контејнер за администрирање.",
   },
   {
@@ -2334,16 +2337,16 @@ export const questions: QuizQuestion[] = [
     rightItems: [
       "произвођач не задржава право власништва; право власништва над копијом прелази на корисника",
       "корисник може вршити измене, ali мора да objavi изворни код свих измена",
-      "произвођач задржава право власништва над свakom kopijom",
+      "произвођач задржава право власништва над сваком kopijom",
       "даје право кориsnику да искористи softver у затвореном коду под власничком лиценцом",
     ],
-    correctAnswer: {
+    correctPairs: {
       "произвођач не задржава право власништва; право власништва над копијом прелази на корисника": 2,
       "корисник може вршити измене, ali мора да objavi изворни код свих измена": 3,
-      "произвођач задржава право власништва над свakom kopijom": 1,
+      "произвођач задржава право власништва над сваком kopijom": 1,
       "даје право кориsnику да искористи softver у затвореном коду под власничком лиценцом": 4,
-    } as Record<string, number>,
-    explanation: "Free = слободна (права прелазе); Copyleft = обавеза objave koda; Proprietary = власник задржава права; Permissive = може у closed-source.",
+    },
+    explanation: "Free = слободна; Copyleft = обавеза objave koda; Proprietary = власник задржава права; Permissive = може у closed-source.",
   },
   {
     id: 199, type: "match", subject: "maintenance", points: 2,
@@ -2360,17 +2363,17 @@ export const questions: QuizQuestion[] = [
       "при prvom покретању kopira све; сваки следећи пут копира све промene у односу на прву",
       "kopira sve podatke са задате локације на задато одредиште",
     ],
-    correctAnswer: {
+    correctPairs: {
       "копира само промene у односу на последњу резервну копију bilo kog типа": 2,
       "покреће се у одређеном временском интервалу": 4,
       "при prvom покретању kopira све; сваки следећи пут копира све промene у односу на прву": 3,
       "kopira sve podatke са задате локације на задато одредиште": 1,
-    } as Record<string, number>,
+    },
     explanation: "Incremental = само промene od задњег; Differential = sve промene od full; Schedule = временски заказано; Full = sve.",
   },
   {
     id: 200, type: "match", subject: "maintenance", points: 3,
-    question: "На левој страни su perfmon команде, а на десној ситуације. Ispred ситуације уписати број команде.",
+    question: "На левој страни su perfmon команде, а на десној ситуације. Испред ситуације уписати број команде.",
     leftItems: [
       "1. perfmon /res",
       "2. perfmon /rel",
@@ -2383,13 +2386,13 @@ export const questions: QuizQuestion[] = [
       "Потребно је пратити број штампачких послова у временском периоду",
       "Потребна је укупна процена стабилности система",
     ],
-    correctAnswer: {
+    correctPairs: {
       "Потребно је генерисати извештаје о стању хардверских и sofтверских ресурса": 4,
       "Потребно је пронаћи процес koji највише користи процесор": 1,
       "Потребно је пратити број штампачких послова у временском периоду": 1,
       "Потребна је укупна процена стабилности система": 2,
-    } as Record<string, number>,
-    explanation: "/res = Resource Monitor (процеси/ресурси); /rel = Reliability Monitor (стабилност); /report = детаљни извештај система.",
+    },
+    explanation: "/res = Resource Monitor; /rel = Reliability Monitor; /report = детаљни извештај система.",
   },
   {
     id: 201, type: "order", subject: "maintenance", points: 3,
@@ -2401,15 +2404,14 @@ export const questions: QuizQuestion[] = [
       "objComputer.SetInfo",
       "Set objComputer = objOU.Create(\"Computer\", \"CN= Lucas\")",
     ],
-    correctAnswer: [2, 4, 1, 0, 3],
-    explanation: "Редослед: GetObject (ОЈ) → Create (рачунар) → Put sAMAccountName → Put userAccountControl → SetInfo (примени).",
+    correctOrder: [2, 4, 1, 0, 3],
+    explanation: "Редослед: GetObject (ОЈ) → Create (рачунар) → Put sAMAccountName → Put userAccountControl → SetInfo.",
   },
 
   // ─────────────────────────────────────────────────────────────
   //  ТЕХНИЧКА ДОКУМЕНТАЦИЈА  (202 – 251)
   // ─────────────────────────────────────────────────────────────
 
-  // Single-choice (202–228)
   {
     id: 202, type: "single", subject: "documentation", points: 1,
     question: "Техничку документацију може да израђује:",
@@ -2419,7 +2421,7 @@ export const questions: QuizQuestion[] = [
       "правно лице са радно ангажованим лиценцираним инжењером",
     ],
     correctAnswer: 2,
-    explanation: "Техничку документацију може израдити правно лице koje има ангажованог лиценцираног инжењера – то обухвата и прва два случаја.",
+    explanation: "Техничку документацију може израдити правно лице koje има ангажованог лиценцираног инжењера.",
   },
   {
     id: 203, type: "single", subject: "documentation", points: 1,
@@ -2431,7 +2433,7 @@ export const questions: QuizQuestion[] = [
       "нумеричке документације",
     ],
     correctAnswer: 3,
-    explanation: "Предмер и предрачун спадају у нумеричку документацију (садржи количине и цене радова и материјала).",
+    explanation: "Предмер и предрачун спадају у нумеричку документацију.",
   },
   {
     id: 204, type: "single", subject: "documentation", points: 1,
@@ -2467,7 +2469,7 @@ export const questions: QuizQuestion[] = [
     question: "Понуда за извођење радова се даје на основу:",
     options: ["предмера и предрачуна", "техничких услова", "техничког описа"],
     correctAnswer: 0,
-    explanation: "Предмер и предрачун је osnova за формирање понуде за извођење грађевинских или инсталатерских радова.",
+    explanation: "Предмер и предрачун је osnova за формирање понуде за извођење радова.",
   },
   {
     id: 208, type: "single", subject: "documentation", points: 1,
@@ -2510,7 +2512,7 @@ export const questions: QuizQuestion[] = [
       "величина на цртежу : величина у стварности",
     ],
     correctAnswer: 2,
-    explanation: "Размера 1:100 = величина на цртежу : величина у стварности → нешто на цртежу je 100 пута мање od стварности.",
+    explanation: "Размера 1:100 = величина на цртежу : величина у стварности.",
   },
   {
     id: 213, type: "single", subject: "documentation", points: 1,
@@ -2522,7 +2524,7 @@ export const questions: QuizQuestion[] = [
       "листу интервентних прегледа са описом интервенција",
     ],
     correctAnswer: 2,
-    explanation: "Сервисна књижица прати техничко стање и историjат одржавања; цена набавне опреме није техничка информација и не спада у њу.",
+    explanation: "Сервисна књижица прати техничко стање и историjат одржавања; цена набавне опреме не спада у њу.",
   },
   {
     id: 214, type: "single", subject: "documentation", points: 1,
@@ -2551,7 +2553,7 @@ export const questions: QuizQuestion[] = [
       "обојити sve елементе симбола црвено",
     ],
     correctAnswer: 1,
-    explanation: "Груписање (Group) свих елемената симбола чини га јединственим objektom koji се може поново користити (copy/paste).",
+    explanation: "Груписање (Group) свих елемената симбола чини га јединственим objektom koji се може поново користити.",
   },
   {
     id: 217, type: "single", subject: "documentation", points: 1,
@@ -2563,18 +2565,18 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 218, type: "single", subject: "documentation", points: 1,
-    question: "У Excel документу треба масовно заменити грешку 'рандик' са 'радник'. Нajjednostavnije је употребити opciju:",
+    question: "У Excel документу треба масовно заменити грешку 'рандик' са 'радник'. Најједноставније је употребити opciju:",
     options: ["Sort & Filter", "Find & Select", "Merge & Center", "Wrap Text"],
     correctAnswer: 1,
     explanation: "Find & Replace (унутар Find & Select) замењује sve pojavljanje teksta u jedном кораку.",
   },
   {
     id: 219, type: "single", subject: "documentation", points: 1,
-    question: "Блок дијаграм рачунарског система са подигнутим Domain Controller-ом нajbolje је kreirati у Visio-u помоћу темплejta:",
+    question: "Блок дијаграм рачунарског система са подигнутим Domain Controller-ом најбоље је креирати у Visio-u помоћу темплejta:",
     options: ["Timeline", "Home Plan", "Block Diagram", "Active Directory", "Calendar"],
     correctAnswer: 3,
-    explanation: "Visio Active Directory темплejt садржи готове шаблоне за AD objekte (OU, корисници, групе, GPO).",
-  },
+    explanation: "Visio Active Directory темплejt садржи готове",
+   }, 
   {
     id: 220, type: "single", subject: "documentation", points: 2,
     imageQuestion: true,
