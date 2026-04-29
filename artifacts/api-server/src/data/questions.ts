@@ -1,35 +1,35 @@
 export type SingleQ = {
-  id: number; type: "single"; subject: string; points: number;
-  question: string; options: string[]; correctAnswer: number;
-  explanation: string; imageQuestion?: boolean;
+  id: number; type: "single"; question: string;
+  options: string[]; correctAnswer: number;
+  explanation: string; imageQuestion?: string | null;
 };
 export type MultiQ = {
-  id: number; type: "multi"; subject: string; points: number;
-  question: string; options: string[]; correctAnswers: number[];
-  explanation: string; imageQuestion?: boolean;
+  id: number; type: "multi"; question: string;
+  options: string[]; correctAnswers: number[];
+  explanation: string; imageQuestion?: string | null;
 };
 export type FillQ = {
-  id: number; type: "fill"; subject: string; points: number;
-  question: string; correctAnswer: string | string[];
-  items?: string[]; hint?: string;
-  explanation: string; imageQuestion?: boolean;
+  id: number; type: "fill"; question: string;
+  correctText: string; hint?: string;
+  explanation: string; imageQuestion?: string | null;
 };
 export type MatchQ = {
-  id: number; type: "match"; subject: string; points: number;
-  question: string; leftItems: string[]; rightItems: string[];
-  correctPairs: Record<string, number>;
-  explanation: string; imageQuestion?: boolean;
+  id: number; type: "match"; question: string;
+  leftItems: string[]; rightItems: string[];
+  correctPairs: number[];
+  explanation: string; imageQuestion?: string | null;
 };
 export type OrderQ = {
-  id: number; type: "order"; subject: string; points: number;
-  question: string; items: string[]; correctOrder: number[];
+  id: number; type: "order"; question: string;
+  items: string[]; correctOrder: number[];
   hasSkips?: boolean;
-  explanation: string; imageQuestion?: boolean;
+  explanation: string; imageQuestion?: string | null;
 };
 export type QuizQuestion = SingleQ | MultiQ | FillQ | MatchQ | OrderQ;
 
-export const questions: QuizQuestion[] = [
+const jpg = (id: number) => `/images/${id}.jpg`;
 
+export const questions: QuizQuestion[] = [
   // ─────────────────────────────────────────────────────────────
   //  РАЧУНАРСКИ ХАРДВЕР  (1 – 51)
   // ─────────────────────────────────────────────────────────────
