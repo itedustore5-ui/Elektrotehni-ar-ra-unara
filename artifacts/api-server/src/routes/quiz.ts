@@ -42,7 +42,13 @@ function scoreAnswer(question: QuizQuestion, answer: string): boolean {
       return selected.length === expected.length && selected.every((v, i) => v === expected[i]);
     }
     if (question.type === "fill") {
-      return answer.trim().toLowerCase() === question.correctText.trim().toLowerCase();
+      const correct = question.correctAnswer;
+      if (Array.isArray(correct)) {
+        // Вишеструки одговори — сваки мора да се поклопи
+        const given = answer.split("|").map((s) => s.trim().toLowerCase());
+        return correct.every((c, i) => c.trim().toLowerCase() === (given[i] ?? ""));
+      }
+      return answer.trim().toLowerCase() === correct.trim().toLowerCase();
     }
     if (question.type === "match") {
       const pairs = answer.split(",").map(Number);
@@ -109,31 +115,36 @@ router.get("/dashboard", requireAuth, async (req, res) => {
     bestScore,
     lastScore,
     canTakeQuiz: !locked,
-    lockReason: locked ? "Искористили сте свој једини покушај за квиз." : null,
+    lockReason: locked ? "Искористили сте својједини покушај за квиз." : null,
     subjectScores,
   });
 });
 
 router.get("/questions", requireAuth, (_req, res) => {
-  res.json(
-    ListQuestionsResponse.parse(
-      questions.map((q) => ({ ...q, imageQuestion: q.imageQuestion ?? null })),
-    ),
-  );
+  try {
+    const mapped = questions.map((q) => ({
+      ...q,
+      // imageQuestion je boolean u questions.ts, Zod ocekuje string | null
+      imageQuestion: q.imageQuestion ? `/images/${q.id}.jpg` : null,
+    }));
+    const result = ListQuestionsResponse.parse(mapped);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: "Greska pri ucitavanju pitanja", error: String(err) });
+  }
 });
 
 router.post("/attempts", requireAuth, async (req, res) => {
   const user = (req as AuthedRequest).user;
   const previousAttempts = await attemptsForUser(user.id);
   if (user.quizOnce && previousAttempts.length > 0) {
-    res.status(403).json({ message: "Искористили сте свој једини покушај за квиз." });
+    res.status(403).json({ message: "Искористили сте својједини покушај за квиз." });
     return;
   }
 
   const body = SubmitAttemptBody.parse(req.body);
   const answerMap = new Map(body.answers.map((a) => [a.questionId, a.answer]));
 
-  // Score se racuna samo za odgovorena pitanja, total je uvek ukupan broj pitanja
   const score = questions.reduce((total, question) => {
     const answer = answerMap.get(question.id);
     if (answer === undefined) return total;
@@ -163,7 +174,6 @@ router.post("/attempts", requireAuth, async (req, res) => {
 router.get("/scoreboard", requireAuth, async (req, res) => {
   const user = (req as AuthedRequest).user;
 
-  // Student vidi samo sebe, admin vidi sve
   if (user.role === "student") {
     const attempts = await attemptsForUser(user.id);
     const rows = [{
@@ -178,7 +188,6 @@ router.get("/scoreboard", requireAuth, async (req, res) => {
     return;
   }
 
-  // Admin vidi sve
   const allUsers = await db.select().from(users).where(and(eq(users.active, true), eq(users.role, "student")));
   const allAttempts = await db.select().from(quizAttempts).orderBy(desc(quizAttempts.createdAt));
 
